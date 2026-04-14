@@ -10,8 +10,8 @@ import {
     FaAddressBook,
     FaTasks,
     FaChartBar,
-    FaCog,
-    FaQuestionCircle,
+    // FaCog,
+    // FaQuestionCircle,
 } from "react-icons/fa";
 
 function Layout({ children }) {
@@ -86,6 +86,11 @@ function Layout({ children }) {
                                 }>
                                     <FaAddressBook /> FollowUp
                                 </NavLink>
+                                <NavLink to="/reports" className={({ isActive }) =>
+                                    isActive ? "nav-item active" : "nav-item"
+                                }>
+                                    <FaAddressBook /> Reports
+                                </NavLink>
                                 
                             </>
                         )}
@@ -117,7 +122,7 @@ function Layout({ children }) {
                     </div>
                 </div>
 
-                <div className="sidebar-bottom">
+                {/* <div className="sidebar-bottom">
                     <button className="new-deal-btn">New Deal</button>
 
                     <div className="nav-item bottom-item">
@@ -127,7 +132,7 @@ function Layout({ children }) {
                     <div className="nav-item bottom-item">
                         <FaQuestionCircle /> Support
                     </div>
-                </div>
+                </div> */}
             </aside>
 
             {/* MAIN */}

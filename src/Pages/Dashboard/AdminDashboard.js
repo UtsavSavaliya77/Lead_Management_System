@@ -1,7 +1,17 @@
+import { useState } from "react";
 import "./AdminDashboard.css";
 import Layout from "../../components/Layout";
+import AddLeadModal from "../../components/AddLeadModal";
 
 function AdminDashboard() {
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
+  const [dashboardLeads, setDashboardLeads] = useState([]);
+  const baseNewLeads = 38;
+
+  const handleSaveDashboardLead = (lead) => {
+    setDashboardLeads((prev) => [lead, ...prev]);
+  };
+
   const pipelineData = [
     {
       id: 1,
@@ -94,6 +104,13 @@ function AdminDashboard() {
           <div className="page-heading">
             <h1>Executive Dashboard</h1>
             <p>System health: Nominal. Regional velocity up by 12.4%.</p>
+            <button
+              type="button"
+              className="dashboard-add-lead-btn"
+              onClick={() => setShowAddLeadModal(true)}
+            >
+              + Add Lead
+            </button>
           </div>
 
           <div className="stats-row">
@@ -128,7 +145,7 @@ function AdminDashboard() {
                 <span>NEW LEADS</span>
                 <small className="red-text">+4%</small>
               </div>
-              <h2>38</h2>
+              <h2>{baseNewLeads + dashboardLeads.length}</h2>
               <p className="small-note">Comparison to target: 92%</p>
             </div>
 
@@ -254,6 +271,11 @@ function AdminDashboard() {
           </div >
 
         </div>
+        <AddLeadModal
+          isOpen={showAddLeadModal}
+          onClose={() => setShowAddLeadModal(false)}
+          onSave={handleSaveDashboardLead}
+        />
     </Layout>
   );
 }

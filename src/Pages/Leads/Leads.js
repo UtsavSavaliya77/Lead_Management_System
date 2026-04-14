@@ -1,8 +1,84 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../../components/Layout";
+import AddLeadModal from "../../components/AddLeadModal";
 import "./Leads.css";
 
 const INITIAL_LEADS = [
+  {
+    id: 1,
+    name: "Julianne Moore",
+    company: "Starlight Ventures",
+    contact: "j.moore@starlight.co",
+    phone: "+1 555-012-3456",
+    source: "LinkedIn",
+    status: "New",
+    priority: "High",
+    assignedTo: "Sarah J.",
+    followUp: "Oct 24, 2023",
+    city: "San Francisco",
+    businessType: "SaaS",
+    budgetRange: "$10,000 - $50,000",
+    serviceInterest: ["Digital Strategy", "Cloud Migration"],
+    tags: ["Q4", "SOC2"],
+    notes: [
+      "Spoke with Julianne today about the Q4 enterprise migration.",
+      "Requested detailed whitepaper on SOC2 compliance.",
+    ],
+  },
+  {
+    id: 2,
+    name: "Marcus Thorne",
+    company: "Apex Global Solutions",
+    contact: "m.thorne@apex.com",
+    phone: "+1 555-987-6543",
+    source: "Web",
+    status: "Contacted",
+    priority: "Medium",
+    assignedTo: "David K.",
+    followUp: "Nov 05, 2023",
+    city: "Austin",
+    businessType: "IT Services",
+    budgetRange: "$25,000 - $80,000",
+    serviceInterest: ["Security Audit"],
+    tags: ["Mid-Market"],
+    notes: ["Needs proposal before Friday."],
+  },
+  {
+    id: 3,
+    name: "Elena Rodriguez",
+    company: "Nexus Logistics",
+    contact: "elena.r@nexus.io",
+    phone: "+1 555-246-8101",
+    source: "Referral",
+    status: "Qualified",
+    priority: "Low",
+    assignedTo: "Sarah J.",
+    followUp: "Nov 02, 2023",
+    city: "Seattle",
+    businessType: "Logistics",
+    budgetRange: "$15,000 - $40,000",
+    serviceInterest: ["Automation"],
+    tags: ["Ops"],
+    notes: ["Interested in onboarding automation module."],
+  },
+  {
+    id: 4,
+    name: "Thomas Wright",
+    company: "Wright & Co.",
+    contact: "t.wright@wright.com",
+    phone: "+1 555-444-3322",
+    source: "Ads",
+    status: "Disqualified",
+    priority: "Low",
+    assignedTo: "Unassigned",
+    followUp: "--",
+    city: "Chicago",
+    businessType: "Consulting",
+    budgetRange: "$5,000 - $15,000",
+    serviceInterest: ["Digital Strategy"],
+    tags: ["Cold"],
+    notes: ["Budget misalignment for now."],
+  },
   {
     id: 5,
     name: "Julianne Moore",
@@ -79,7 +155,7 @@ const INITIAL_LEADS = [
     notes: ["Budget misalignment for now."],
   },
   {
-    id: 1,
+    id: 9,
     name: "Julianne Moore",
     company: "Starlight Ventures",
     contact: "j.moore@starlight.co",
@@ -100,7 +176,7 @@ const INITIAL_LEADS = [
     ],
   },
   {
-    id: 2,
+    id: 10,
     name: "Marcus Thorne",
     company: "Apex Global Solutions",
     contact: "m.thorne@apex.com",
@@ -118,7 +194,7 @@ const INITIAL_LEADS = [
     notes: ["Needs proposal before Friday."],
   },
   {
-    id: 3,
+    id: 11,
     name: "Elena Rodriguez",
     company: "Nexus Logistics",
     contact: "elena.r@nexus.io",
@@ -136,7 +212,7 @@ const INITIAL_LEADS = [
     notes: ["Interested in onboarding automation module."],
   },
   {
-    id: 4,
+    id: 12,
     name: "Thomas Wright",
     company: "Wright & Co.",
     contact: "t.wright@wright.com",
@@ -153,44 +229,20 @@ const INITIAL_LEADS = [
     tags: ["Cold"],
     notes: ["Budget misalignment for now."],
   },
+  
 ];
-
-const EMPTY_FORM = {
-  leadName: "",
-  companyName: "",
-  phone: "",
-  alternatePhone: "",
-  email: "",
-  businessType: "",
-  source: "LinkedIn",
-  priority: "Medium",
-  serviceInterest: "",
-  budgetRange: "",
-  city: "",
-  assignedTo: "Alex Rivera",
-  tags: "",
-  followUp:"",
-};
 
 function Leads() {
   const LEAD_STATUSES = ["New", "Contacted", "Qualified", "Disqualified"];
   const [leads, setLeads] = useState(INITIAL_LEADS);
   const [sourceFilter, setSourceFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  // const [rowsPerPage, setRowsPerPage] = useState(5);
+  const rowsPerPage=5;
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
-  const [formData, setFormData] = useState(EMPTY_FORM);
   const [noteDraft, setNoteDraft] = useState("");
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
-  };
   
 
   const filteredLeads = useMemo(() => {
@@ -230,38 +282,15 @@ function Leads() {
     });
   };
 
-  const handleRowsPerPageChange = (event) => {
-    setRowsPerPage(Number(event.target.value));
-    setCurrentPage(1);
-  };
+  // const handleRowsPerPageChange = (event) => {
+  //   setRowsPerPage(Number(event.target.value));
+  //   setCurrentPage(1);
+  // };
 
-  const handleSaveLead = (event) => {
-    event.preventDefault();
-    if (!formData.leadName.trim() || !formData.companyName.trim()) return;
-
-    const newLead = {
-      id: Date.now(),
-      name: formData.leadName.trim(),
-      company: formData.companyName.trim(),
-      contact: formData.email.trim() || "not-provided@email.com",
-      phone: formData.phone.trim() || "--",
-      source: formData.source,
-      status: "New",
-      priority: formData.priority,
-      assignedTo: formData.assignedTo,
-      followUp: formData.followUp,
-      city: formData.city.trim() || "--",
-      businessType: formData.businessType || "General",
-      budgetRange: formData.budgetRange.trim() || "--",
-      serviceInterest: formData.serviceInterest.split(",").map((item) => item.trim()).filter(Boolean),
-      tags: formData.tags.split(",").map((item) => item.trim()).filter(Boolean),
-      notes: ["Lead created from Add Lead form."],
-    };
-
+  const handleSaveLead = (newLead) => {
     setLeads((prev) => [newLead, ...prev]);
     setSelectedLeadId(newLead.id);
     setShowAddModal(false);
-    setFormData(EMPTY_FORM);
     setCurrentPage(1);
   };
 
@@ -497,14 +526,14 @@ function Leads() {
                 Next
               </button>
             </div>
-            <div className="rows-control">
+            {/* <div className="rows-control">
               <label htmlFor="rows-per-page">Rows per page:</label>
               <select id="rows-per-page" value={rowsPerPage} onChange={handleRowsPerPageChange}>
                 <option value={5}>5</option>
                 <option value={10}>10</option>
                 <option value={25}>25</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           <div className="lead-metrics">
@@ -630,116 +659,11 @@ function Leads() {
         )}
       </div>
 
-      {showAddModal && (
-        <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-          <div className="add-lead-modal" onClick={(event) => event.stopPropagation()}>
-            <div className="modal-header">
-              <div>
-                <h2>Create New Lead</h2>
-              </div>
-              <button onClick={() => setShowAddModal(false)}>x</button>
-            </div>
-            <form onSubmit={handleSaveLead}>
-              <div className="modal-grid">
-                <label className="form-field">
-                  <span>LEAD NAME *</span>
-                  <input name="leadName" placeholder="e.g. Jonathan Ive" value={formData.leadName} onChange={handleChange} required />
-                  <small>Full legal name of the individual</small>
-                </label>
-                <label className="form-field">
-                  <span>COMPANY NAME *</span>
-                  <input name="companyName" placeholder="e.g. Cupertino Design Co." value={formData.companyName} onChange={handleChange} required />
-                </label>
-
-                <label className="form-field">
-                  <span>PHONE</span>
-                  <input name="phone" placeholder="+1 (555) 000-0000" value={formData.phone} onChange={handleChange} />
-                </label>
-                <label className="form-field">
-                  <span>ALTERNATE PHONE</span>
-                  <input name="alternatePhone" placeholder="Mobile or Home" value={formData.alternatePhone} onChange={handleChange} />
-                </label>
-
-                <label className="form-field">
-                  <span>EMAIL</span>
-                  <input name="email" placeholder="jonathan@company.com" value={formData.email} onChange={handleChange} />
-                </label>
-                <label className="form-field">
-                  <span>BUSINESS TYPE</span>
-                  <input name="businessType" placeholder="Enter buisness type" value={formData.businessType} onChange={handleChange} />
-                </label>
-
-                <label className="form-field">
-                  <span>SOURCE</span>
-                  <select name="source" value={formData.source} onChange={handleChange}>
-                    <option>LinkedIn</option>
-                    <option>Web</option>
-                    <option>Referral</option>
-                    <option>Ads</option>
-                  </select>
-                </label>
-
-                <div className="form-field">
-                  <span>PRIORITY</span>
-                  <div className="priority-group">
-                    {["Low", "Medium", "High"].map((priority) => (
-                      <button
-                        key={priority}
-                        type="button"
-                        className={formData.priority === priority ? "priority-pill active" : "priority-pill"}
-                        onClick={() => setFormData((prev) => ({ ...prev, priority }))}
-                      >
-                        {priority}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <label className="form-field form-field-full">
-                  <span>SERVICE INTEREST</span>
-                  <input
-                    name="serviceInterest"
-                    placeholder="Digital Strategy, Cloud Migration"
-                    value={formData.serviceInterest}
-                    onChange={handleChange}
-                  />
-                </label>
-
-                <label className="form-field">
-                  <span>BUDGET RANGE</span>
-                  <input name="budgetRange" placeholder="$ 10,000 - 50,000" value={formData.budgetRange} onChange={handleChange} />
-                </label>
-                <label className="form-field">
-                  <span>CITY</span>
-                  <input name="city" placeholder="e.g. San Francisco" value={formData.city} onChange={handleChange} />
-                </label>
-
-                <label className="form-field">
-                  <span>ASSIGNED TO</span>
-                  <input name="assignedTo" placeholder="Alex Rivera" value={formData.assignedTo} onChange={handleChange} />
-                </label>
-                <label className="form-field">
-                  <span>TAGS</span>
-                  <input name="tags" placeholder="press enter to add..." value={formData.tags} onChange={handleChange} />
-                </label>
-                <label className="form-field">
-                  <span>Follow Up</span>
-                  <input
-                    type="date"
-                    name="followUp"
-                    value={formData.followUp}
-                    onChange={handleChange}
-                  />
-                </label>
-              </div>
-              <div className="modal-actions">
-                <button type="button" onClick={() => setShowAddModal(false)}>Cancel</button>
-                <button type="submit" className="save-btn">Save Lead</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <AddLeadModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={handleSaveLead}
+      />
     </Layout>
   );
 }

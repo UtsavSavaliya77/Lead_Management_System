@@ -27,24 +27,30 @@ function Pipeline() {
       tasks: [
         {
           id: "1",
-          title: "Contact enterprise leads from web forms",
-          tag: "WEB",
-          code: "LEAD-344",
-          avatar: "AJ",
+          leadName: "John Doe",
+          company: "ABC Ltd",
+          priority: "High",
+          assignee: "Alex Johnson",
+          followUp: "2026-04-16",
+          source: "Web",
         },
         {
           id: "2",
-          title: "Qualify marketing leads for April campaign",
-          tag: "MARKETING",
-          code: "LEAD-360",
-          avatar: "SK",
+          leadName: "Jane Smith",
+          company: "XYZ Pvt",
+          priority: "Medium",
+          assignee: "Sarah Khan",
+          followUp: "2026-04-18",
+          source: "LinkedIn",
         },
         {
           id: "5",
-          title: "Verify phone numbers and profile completeness",
-          tag: "DATA",
-          code: "LEAD-377",
-          avatar: "RM",
+          leadName: "Rahul Mehta",
+          company: "TechSoft",
+          priority: "Low",
+          assignee: "Ravi Menon",
+          followUp: "2026-04-21",
+          source: "Referral",
         },
       ]
     },
@@ -54,17 +60,21 @@ function Pipeline() {
       tasks: [
         {
           id: "3",
-          title: "Follow up with priority SaaS opportunities",
-          tag: "HOT",
-          code: "LEAD-382",
-          avatar: "DT",
+          leadName: "Priya Iyer",
+          company: "Cloudnova",
+          priority: "High",
+          assignee: "David Thomas",
+          followUp: "2026-04-15",
+          source: "Ads",
         },
         {
           id: "6",
-          title: "Schedule discovery calls with inbound prospects",
-          tag: "CALLS",
-          code: "LEAD-395",
-          avatar: "AN",
+          leadName: "Aman Verma",
+          company: "GrowthHive",
+          priority: "Medium",
+          assignee: "Anita Nair",
+          followUp: "2026-04-17",
+          source: "Website",
         },
       ]
     },
@@ -74,17 +84,21 @@ function Pipeline() {
       tasks: [
         {
           id: "7",
-          title: "Review lead scoring and assign ownership",
-          tag: "ACCOUNTS",
-          code: "LEAD-401",
-          avatar: "PJ",
+          leadName: "Neha Patil",
+          company: "Acme Corp",
+          priority: "High",
+          assignee: "Piyush Jain",
+          followUp: "2026-04-19",
+          source: "LinkedIn",
         },
         {
           id: "8",
-          title: "Validate proposal follow-up sequence",
-          tag: "SALES",
-          code: "LEAD-405",
-          avatar: "MG",
+          leadName: "Mohit Gupta",
+          company: "FinEdge",
+          priority: "Low",
+          assignee: "Maya George",
+          followUp: "2026-04-22",
+          source: "Referral",
         },
       ],
     },
@@ -94,10 +108,12 @@ function Pipeline() {
       tasks: [
         {
           id: "4",
-          title: "Closed deal after final demo discussion",
-          tag: "WON",
-          code: "LEAD-340",
-          avatar: "AK",
+          leadName: "Arjun Kapoor",
+          company: "BluePeak",
+          priority: "High",
+          assignee: "Ankit Kumar",
+          followUp: "2026-04-14",
+          source: "Web",
         }
       ]
     }
@@ -178,11 +194,12 @@ function Pipeline() {
 
       const newActiveTasks = activeColumn.tasks.filter((t) => t.id !== activeId);
 
-      const overTaskIndex = overColumn.tasks.findIndex((t) => t.id === overId);
-      const insertAt =
-        overTaskIndex === -1
-          ? overColumn.tasks.length
-          : overTaskIndex;
+      const isDroppingOnColumn = data[overId];
+
+      const insertAt = isDroppingOnColumn
+        ? overColumn.tasks.length   // dropped on column → last
+        : overColumn.tasks.length;  // dropped on task → ALSO last
+
 
       const newOverTasks = [...overColumn.tasks];
       newOverTasks.splice(insertAt, 0, activeTask);
@@ -229,11 +246,13 @@ function Pipeline() {
         {...attributes}
         {...listeners}
       >
-        <p className="pipeline-card-title">{task.title}</p>
-        <div className="pipeline-card-tag">{task.tag}</div>
-        <div className="pipeline-card-footer">
-          <span className="pipeline-card-code">{task.code}</span>
-          <span className="pipeline-card-avatar">{task.avatar}</span>
+        <p className="pipeline-card-title">{task.leadName}</p>
+        <p className="pipeline-card-company">{task.company}</p>
+        <div className="pipeline-card-grid">
+          <p><strong>Priority:</strong> {task.priority}</p>
+          <p><strong>Assignee:</strong> {task.assignee}</p>
+          <p><strong>Next Follow-up:</strong> {task.followUp}</p>
+          <p><strong>Source:</strong> {task.source}</p>
         </div>
       </div>
     );
@@ -281,11 +300,13 @@ function Pipeline() {
           <DragOverlay>
             {activeTask ? (
               <div className="pipeline-card1 drag-overlay">
-                <p className="pipeline-card-title">{activeTask.title}</p>
-                <div className="pipeline-card-tag">{activeTask.tag}</div>
-                <div className="pipeline-card-footer">
-                  <span>{activeTask.code}</span>
-                  <span>{activeTask.avatar}</span>
+                <p className="pipeline-card-title">{activeTask.leadName}</p>
+                <p className="pipeline-card-company">{activeTask.company}</p>
+                <div className="pipeline-card-grid">
+                  <p><strong>Priority:</strong> {activeTask.priority}</p>
+                  <p><strong>Assignee:</strong> {activeTask.assignee}</p>
+                  <p><strong>Next Follow-up:</strong> {activeTask.followUp}</p>
+                  <p><strong>Source:</strong> {activeTask.source}</p>
                 </div>
               </div>
             ) : null}

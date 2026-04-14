@@ -23,6 +23,25 @@ body {
   color: #73849b;
 }
 
+.page-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.dashboard-add-lead-btn {
+  margin-left: auto;
+  border: none;
+  border-radius: 8px;
+  background: #ef4444;
+  color: #fff;
+  padding: 9px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 /* STATS */
 .stats-row {
   display: flex;
@@ -589,10 +608,6 @@ body {
 
 /* MOBILE */
 @media (max-width: 768px) {
-  .stats-row {
-    flex-direction: column;
-  }
-
   .stat-card {
     width: 100%;
   }
