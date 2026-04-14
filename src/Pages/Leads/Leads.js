@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../../components/Layout";
 import "./Leads.css";
 
 const INITIAL_LEADS = [
   {
-    id: 1,
+    id: 5,
     name: "Julianne Moore",
     company: "Starlight Ventures",
     contact: "j.moore@starlight.co",
@@ -25,7 +25,7 @@ const INITIAL_LEADS = [
     ],
   },
   {
-    id: 2,
+    id: 6,
     name: "Marcus Thorne",
     company: "Apex Global Solutions",
     contact: "m.thorne@apex.com",
@@ -43,7 +43,7 @@ const INITIAL_LEADS = [
     notes: ["Needs proposal before Friday."],
   },
   {
-    id: 3,
+    id: 7,
     name: "Elena Rodriguez",
     company: "Nexus Logistics",
     contact: "elena.r@nexus.io",
@@ -61,7 +61,7 @@ const INITIAL_LEADS = [
     notes: ["Interested in onboarding automation module."],
   },
   {
-    id: 4,
+    id: 8,
     name: "Thomas Wright",
     company: "Wright & Co.",
     contact: "t.wright@wright.com",
@@ -173,6 +173,7 @@ const EMPTY_FORM = {
 };
 
 function Leads() {
+  const LEAD_STATUSES = ["New", "Contacted", "Qualified", "Disqualified"];
   const [leads, setLeads] = useState(INITIAL_LEADS);
   const [sourceFilter, setSourceFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -181,6 +182,7 @@ function Leads() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
   const [formData, setFormData] = useState(EMPTY_FORM);
+  const [noteDraft, setNoteDraft] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -263,6 +265,150 @@ function Leads() {
     setCurrentPage(1);
   };
 
+  const handleExportLeads = () => {
+    if (!filteredLeads.length) {
+      window.alert("No leads available to export.");
+      return;
+    }
+
+    const headers = [
+      "Lead Name",
+      "Company",
+      "Email",
+      "Phone",
+      "Source",
+      "Status",
+      "Priority",
+      "Assigned To",
+      "Follow Up",
+      "City",
+      "Business Type",
+      "Budget Range",
+      "Service Interest",
+      "Tags",
+      "Notes",
+    ];
+
+    const escapeCsv = (value) => {
+      const normalized =
+        value === null || value === undefined ? "" : String(value);
+      return `"${normalized.replace(/"/g, '""')}"`;
+    };
+
+    const rows = filteredLeads.map((lead) => [
+      lead.name,
+      lead.company,
+      lead.contact,
+      lead.phone,
+      lead.source,
+      lead.status,
+      lead.priority,
+      lead.assignedTo,
+      lead.followUp,
+      lead.city,
+      lead.businessType,
+      lead.budgetRange,
+      (lead.serviceInterest || []).join(" | "),
+      (lead.tags || []).join(" | "),
+      (lead.notes || []).join(" | "),
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) => row.map(escapeCsv).join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const dateStamp = new Date().toISOString().slice(0, 10);
+
+    link.href = url;
+    link.setAttribute("download", `leads-export-${dateStamp}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  useEffect(() => {
+    setNoteDraft("");
+  }, [selectedLeadId]);
+
+  const updateSelectedLead = (updater) => {
+    if (!selectedLeadId) return;
+
+    setLeads((prev) =>
+      prev.map((lead) => {
+        if (lead.id !== selectedLeadId) return lead;
+        return updater(lead);
+      })
+    );
+  };
+
+  const handleAddNote = () => {
+    const cleanNote = noteDraft.trim();
+    if (!cleanNote) return;
+
+    updateSelectedLead((lead) => ({
+      ...lead,
+      notes: [...lead.notes, cleanNote],
+    }));
+    setNoteDraft("");
+  };
+
+  const handleSchedule = () => {
+    if (!selectedLead) return;
+    const currentValue =
+      selectedLead.followUp && selectedLead.followUp !== "--"
+        ? selectedLead.followUp
+        : "";
+    const newDate = window.prompt(
+      "Enter follow-up date (YYYY-MM-DD):",
+      currentValue
+    );
+
+    if (newDate === null) return;
+    const cleanDate = newDate.trim();
+    if (!cleanDate) return;
+
+    const parsedDate = new Date(cleanDate);
+    if (Number.isNaN(parsedDate.getTime())) {
+      window.alert("Please enter a valid date in YYYY-MM-DD format.");
+      return;
+    }
+
+    updateSelectedLead((lead) => ({
+      ...lead,
+      followUp: cleanDate,
+    }));
+  };
+
+  const handleStatusChange = () => {
+    if (!selectedLead) return;
+    const newStatus = window.prompt(
+      `Enter status (${LEAD_STATUSES.join(", ")}):`,
+      selectedLead.status
+    );
+
+    if (newStatus === null) return;
+    const normalizedStatus = newStatus.trim();
+    if (!normalizedStatus) return;
+
+    const matchedStatus = LEAD_STATUSES.find(
+      (status) => status.toLowerCase() === normalizedStatus.toLowerCase()
+    );
+
+    if (!matchedStatus) {
+      window.alert(`Invalid status. Use one of: ${LEAD_STATUSES.join(", ")}`);
+      return;
+    }
+
+    updateSelectedLead((lead) => ({
+      ...lead,
+      status: matchedStatus,
+    }));
+  };
+
   return (
     <Layout>
       <div className="leads-page">
@@ -273,7 +419,7 @@ function Leads() {
               <p>{filteredLeads.length} total leads in your pipeline</p>
             </div>
             <div className="header-actions">
-              <button className="export-btn">Export</button>
+              <button className="export-btn" onClick={handleExportLeads}>Export</button>
               <button className="add-lead-btn" onClick={() => setShowAddModal(true)}>
                 + Add Lead
               </button>
@@ -399,7 +545,7 @@ function Leads() {
                 <div className="lead-title-block">
                   <div className="lead-name-row">
                     <h3>{selectedLead.name}</h3>
-                    <span className="badge new-badge">New</span>
+                    <span className="badge new-badge">{selectedLead.status}</span>
                     <span className="badge high-badge">{selectedLead.priority}</span>
                   </div>
                   <p>{selectedLead.company}</p>
@@ -433,13 +579,13 @@ function Leads() {
                     <p className="follow-up-label">Next Follow-up Overdue</p>
                     <h4>{formatDate(selectedLead.followUp)}</h4>
                   </div>
-                  <button>Reschedule</button>
+                  <button onClick={handleSchedule}>Reschedule</button>
                 </div>
               </div>
               <div className="lead-actions">
-                <button>Add Note</button>
-                <button>Schedule</button>
-                <button className="status-btn">Change Status</button>
+                <button onClick={handleAddNote}>Add Note</button>
+                <button onClick={handleSchedule}>Schedule</button>
+                <button className="status-btn" onClick={handleStatusChange}>Change Status</button>
               </div>
 
               <div className="drawer-tabs">
@@ -449,7 +595,11 @@ function Leads() {
               </div>
 
               <div className="note-input-box">
-                <textarea placeholder="Write a note..." />
+                <textarea
+                  placeholder="Write a note..."
+                  value={noteDraft}
+                  onChange={(event) => setNoteDraft(event.target.value)}
+                />
                 <div className="note-tools">📎 @</div>
               </div>
 
@@ -484,19 +634,21 @@ function Leads() {
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
           <div className="add-lead-modal" onClick={(event) => event.stopPropagation()}>
             <div className="modal-header">
-              <h2>Create New Lead</h2>
+              <div>
+                <h2>Create New Lead</h2>
+              </div>
               <button onClick={() => setShowAddModal(false)}>x</button>
             </div>
             <form onSubmit={handleSaveLead}>
               <div className="modal-grid">
                 <label className="form-field">
-                  <span>LEAD NAME</span>
-                  <input name="leadName" placeholder="e.g. Jonathan Ive" value={formData.leadName} onChange={handleChange} />
+                  <span>LEAD NAME *</span>
+                  <input name="leadName" placeholder="e.g. Jonathan Ive" value={formData.leadName} onChange={handleChange} required />
                   <small>Full legal name of the individual</small>
                 </label>
                 <label className="form-field">
-                  <span>COMPANY NAME</span>
-                  <input name="companyName" placeholder="e.g. Cupertino Design Co." value={formData.companyName} onChange={handleChange} />
+                  <span>COMPANY NAME *</span>
+                  <input name="companyName" placeholder="e.g. Cupertino Design Co." value={formData.companyName} onChange={handleChange} required />
                 </label>
 
                 <label className="form-field">

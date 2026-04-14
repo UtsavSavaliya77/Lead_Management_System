@@ -16,7 +16,13 @@ import {
 
 function Layout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
+    const [showProfileDetails, setShowProfileDetails] = useState(false);
     const role = localStorage.getItem("role");
+    const profileName = localStorage.getItem("name") || "Alex Sterling";
+    const profileEmail = localStorage.getItem("email") || "alex.sterling@digitrend.com";
+    const profilePhone = localStorage.getItem("phone") || "+1 555-010-2000";
+    const profileDepartment = localStorage.getItem("department") || "Sales";
+    const profileLocation = localStorage.getItem("location") || "San Francisco";
 
     useEffect(() => {
         const handleResize = () => {
@@ -26,6 +32,17 @@ function Layout({ children }) {
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    useEffect(() => {
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                setShowProfileDetails(false);
+            }
+        };
+
+        window.addEventListener("keydown", handleEscape);
+        return () => window.removeEventListener("keydown", handleEscape);
     }, []);
 
     return (
@@ -59,16 +76,17 @@ function Layout({ children }) {
                                 }>
                                     <FaHandshake /> Leads
                                 </NavLink>
+                                <NavLink to="/pipline" className={({ isActive }) =>
+                                    isActive ? "nav-item active" : "nav-item"
+                                }>
+                                    <FaChartBar /> Pipeline
+                                </NavLink>
                                 <NavLink to="/followup" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
                                     <FaAddressBook /> FollowUp
                                 </NavLink>
-                                <NavLink to="/reports" className={({ isActive }) =>
-                                    isActive ? "nav-item active" : "nav-item"
-                                }>
-                                    <FaChartBar /> Reports
-                                </NavLink>
+                                
                             </>
                         )}
 
@@ -137,9 +155,13 @@ function Layout({ children }) {
                             <FaRegCommentDots />
                         </span>
 
-                        <div className="profile-box">
+                        <button
+                            type="button"
+                            className="profile-box"
+                            onClick={() => setShowProfileDetails(true)}
+                        >
                             <div className="profile-info">
-                                <h4>ALEX STERLING</h4>
+                                <h4>{profileName.toUpperCase()}</h4>
                                 <p>{role?.toUpperCase()}</p>
                             </div>
 
@@ -148,13 +170,67 @@ function Layout({ children }) {
                                 src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
                                 alt="profile"
                             />
-                        </div>
+                        </button>
                     </div>
                 </header>
 
                 {/* PAGE CONTENT */}
                 <div className="page-content">{children}</div>
             </div>
+
+            {showProfileDetails && (
+                <>
+                    <div
+                        className="profile-overlay"
+                        onClick={() => setShowProfileDetails(false)}
+                    />
+                    <div className="profile-details-modal">
+                        <div className="profile-details-header">
+                            <h3>Profile Details</h3>
+                            <button
+                                type="button"
+                                onClick={() => setShowProfileDetails(false)}
+                                aria-label="Close profile details"
+                            >
+                                x
+                            </button>
+                        </div>
+
+                        <div className="profile-details-body">
+                            <img
+                                className="profile-avatar-lg"
+                                src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e"
+                                alt="profile"
+                            />
+
+                            <div className="profile-detail-row">
+                                <span>Name</span>
+                                <strong>{profileName}</strong>
+                            </div>
+                            <div className="profile-detail-row">
+                                <span>Role</span>
+                                <strong>{role?.toUpperCase() || "USER"}</strong>
+                            </div>
+                            <div className="profile-detail-row">
+                                <span>Email</span>
+                                <strong>{profileEmail}</strong>
+                            </div>
+                            <div className="profile-detail-row">
+                                <span>Phone</span>
+                                <strong>{profilePhone}</strong>
+                            </div>
+                            <div className="profile-detail-row">
+                                <span>Department</span>
+                                <strong>{profileDepartment}</strong>
+                            </div>
+                            <div className="profile-detail-row">
+                                <span>Location</span>
+                                <strong>{profileLocation}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     );
 }

@@ -98,6 +98,52 @@ function FollowUp() {
     );
   };
 
+  const handleReschedule = (id, currentDate, currentTime) => {
+    const nextDate = window.prompt("Enter new date (YYYY-MM-DD):", currentDate);
+    if (nextDate === null) return;
+
+    const cleanDate = nextDate.trim();
+    if (!cleanDate) return;
+
+    const parsedDate = new Date(cleanDate);
+    if (Number.isNaN(parsedDate.getTime())) {
+      window.alert("Please enter a valid date in YYYY-MM-DD format.");
+      return;
+    }
+
+    const nextTime = window.prompt("Enter new time (HH:mm):", currentTime);
+    if (nextTime === null) return;
+
+    const cleanTime = nextTime.trim();
+    const isValidTime = /^([01]\d|2[0-3]):([0-5]\d)$/.test(cleanTime);
+    if (!isValidTime) {
+      window.alert("Please enter a valid time in 24-hour format (HH:mm).");
+      return;
+    }
+
+    setFollowUps((prev) =>
+      prev.map((f) =>
+        f.id === id ? { ...f, date: cleanDate, time: cleanTime } : f
+      )
+    );
+  };
+
+  const handleAddNote = (id) => {
+    const note = window.prompt("Add follow-up note:");
+    if (note === null) return;
+
+    const cleanNote = note.trim();
+    if (!cleanNote) return;
+
+    setFollowUps((prev) =>
+      prev.map((f) => {
+        if (f.id !== id) return f;
+        const existingNotes = f.notes || [];
+        return { ...f, notes: [...existingNotes, cleanNote] };
+      })
+    );
+  };
+
   const events = followUps.map((f) => {
     const start = new Date(`${f.date}T${f.time}`);
     const end = new Date(start.getTime() + 30 * 60000);
@@ -143,8 +189,8 @@ function FollowUp() {
 
         <div className="actions">
           <button onClick={() => markDone(f.id)}>✔</button>
-          <button>⏰</button>
-          <button>📝</button>
+          <button onClick={() => handleReschedule(f.id, f.date, f.time)}>⏰</button>
+          <button onClick={() => handleAddNote(f.id)}>📝</button>
         </div>
       </div>
     </div>
