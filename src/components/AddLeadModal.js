@@ -14,7 +14,7 @@ const INITIAL_FORM = {
   serviceInterest: "",
   budgetRange: "",
   tags: "",
-  assignedTo: "Alex Rivera",
+  assignedTo: "",
   followUp: "",
   city: "",
 };
@@ -128,7 +128,7 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
   };
 
   return (
-    <div className="alm-overlay" onClick={onClose}>
+    <div className="alm-overlay">
       <div className="alm-modal" onClick={(event) => event.stopPropagation()}>
         <div className="alm-header">
           <div>
