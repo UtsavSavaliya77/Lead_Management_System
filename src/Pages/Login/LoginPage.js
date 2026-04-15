@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "./LoginPage.css";
 import Logo from "../../assets/Logo/Logo.png";
 
@@ -36,7 +37,7 @@ function LoginPage() {
     e.preventDefault();
 
     if (!email || !password || !role) {
-      alert("Please fill all fields");
+      toast.error("Please fill all fields");
       return;
     }
 
@@ -53,7 +54,7 @@ function LoginPage() {
       localStorage.setItem("email", matchedUser.email);
       navigate(matchedUser.dashboard);
     } else {
-      alert("Invalid email, password, or role");
+      toast.error("Invalid email, password, or role");
     }
   };
 

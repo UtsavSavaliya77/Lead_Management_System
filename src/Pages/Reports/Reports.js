@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { toast } from "react-toastify";
 import {
     BarChart,
     Bar,
@@ -124,7 +125,7 @@ function Reports() {
 
     const handleExportCsv = () => {
         if (!filteredRows.length) {
-            window.alert("No report rows available to export.");
+            toast.error("No report rows available to export.");
             return;
         }
         const headers = [
@@ -170,6 +171,7 @@ function Reports() {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
+        toast.success("Reports exported successfully.");
     };
 
     return (

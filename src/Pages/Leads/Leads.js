@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../../components/Layout";
 import AddLeadModal from "../../components/AddLeadModal";
+import { toast } from "react-toastify";
 import "./Leads.css";
 
 const INITIAL_LEADS = [
@@ -292,11 +293,12 @@ function Leads() {
     setSelectedLeadId(newLead.id);
     setShowAddModal(false);
     setCurrentPage(1);
+    toast.success("Lead added successfully.");
   };
 
   const handleExportLeads = () => {
     if (!filteredLeads.length) {
-      window.alert("No leads available to export.");
+      toast.error("No leads available to export.");
       return;
     }
 
@@ -357,6 +359,7 @@ function Leads() {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    toast.success("Leads exported successfully.");
   };
 
   useEffect(() => {
@@ -400,9 +403,16 @@ function Leads() {
     const cleanDate = newDate.trim();
     if (!cleanDate) return;
 
-    const parsedDate = new Date(cleanDate);
-    if (Number.isNaN(parsedDate.getTime())) {
-      window.alert("Please enter a valid date in YYYY-MM-DD format.");
+    const isValidDateFormat = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate);
+    const [year, month, day] = cleanDate.split("-").map(Number);
+    const parsedDate = new Date(Date.UTC(year, month - 1, day));
+    const isRealDate =
+      parsedDate.getUTCFullYear() === year &&
+      parsedDate.getUTCMonth() === month - 1 &&
+      parsedDate.getUTCDate() === day;
+
+    if (!isValidDateFormat || !isRealDate) {
+      toast.error("Please enter a valid date in YYYY-MM-DD format.");
       return;
     }
 
@@ -410,6 +420,7 @@ function Leads() {
       ...lead,
       followUp: cleanDate,
     }));
+    toast.success("Follow-up date updated successfully.");
   };
 
   const handleStatusChange = () => {
@@ -428,7 +439,7 @@ function Leads() {
     );
 
     if (!matchedStatus) {
-      window.alert(`Invalid status. Use one of: ${LEAD_STATUSES.join(", ")}`);
+      toast.error(`Invalid status. Use one of: ${LEAD_STATUSES.join(", ")}`);
       return;
     }
 

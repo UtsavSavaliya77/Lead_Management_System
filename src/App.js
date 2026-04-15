@@ -8,6 +8,8 @@ import FollowUp from "./Pages/FollowUp/FollowUp";
 import Pipeline from "./Pages/Pipline/Pipline";
 import Reports from "./Pages/Reports/Reports";
 import Setting from "./Pages/User/Setting";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // ✅ UPDATED ProtectedRoute (multi-role support)
 function ProtectedRoute({ children, allowedRoles }) {
@@ -37,9 +39,10 @@ function RoleRedirect() {
 
 function App() {
   return (
-    <Routes>
-      {/* DEFAULT */}
-      <Route path="/" element={<RoleRedirect />} />
+    <>
+      <Routes>
+        {/* DEFAULT */}
+        <Route path="/" element={<RoleRedirect />} />
 
       {/* DASHBOARDS */}
       <Route
@@ -114,9 +117,11 @@ function App() {
           </ProtectedRoute>
         }
       />
-      {/* FALLBACK */}
-      <Route path="*" element={<Navigate to="/" />} />
-    </Routes>
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
   );
 }
 

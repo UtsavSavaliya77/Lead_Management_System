@@ -3,6 +3,7 @@ import Layout from "../../components/Layout";
 import "./FollowUp.css";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import { toast } from "react-toastify";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 
@@ -107,9 +108,16 @@ function FollowUp() {
     const cleanDate = nextDate.trim();
     if (!cleanDate) return;
 
-    const parsedDate = new Date(cleanDate);
-    if (Number.isNaN(parsedDate.getTime())) {
-      window.alert("Please enter a valid date in YYYY-MM-DD format.");
+    const isValidDateFormat = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate);
+    const [year, month, day] = cleanDate.split("-").map(Number);
+    const parsedDate = new Date(Date.UTC(year, month - 1, day));
+    const isRealDate =
+      parsedDate.getUTCFullYear() === year &&
+      parsedDate.getUTCMonth() === month - 1 &&
+      parsedDate.getUTCDate() === day;
+
+    if (!isValidDateFormat || !isRealDate) {
+      toast.error("Please enter a valid date in YYYY-MM-DD format.");
       return;
     }
 
@@ -119,7 +127,7 @@ function FollowUp() {
     const cleanTime = nextTime.trim();
     const isValidTime = /^([01]\d|2[0-3]):([0-5]\d)$/.test(cleanTime);
     if (!isValidTime) {
-      window.alert("Please enter a valid time in 24-hour format (HH:mm).");
+      toast.error("Please enter a valid time in 24-hour format (HH:mm).");
       return;
     }
 
@@ -128,6 +136,7 @@ function FollowUp() {
         f.id === id ? { ...f, date: cleanDate, time: cleanTime } : f
       )
     );
+    toast.success("Follow-up rescheduled successfully.");
   };
 
   const handleAddNote = (id) => {
