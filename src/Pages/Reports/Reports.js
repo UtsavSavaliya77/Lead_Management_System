@@ -240,9 +240,19 @@ function Reports() {
                     <div className="chart-card">
                         <h4>Leads by Source</h4>
                         <ResponsiveContainer width="100%" height={280}>
-                            <BarChart data={leadsBySource}>
+                            <BarChart
+                                data={leadsBySource}
+                                margin={{ top: 10, right: 20, left: -20, bottom: 40 }}
+                            >
+
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" />
+                                <XAxis
+                                    dataKey="name"
+                                    interval={0}
+                                    angle={-30}
+                                    textAnchor="end"
+                                    height={50}
+                                />
                                 <YAxis allowDecimals={false} />
                                 <Tooltip />
                                 <Bar dataKey="value" fill="#3b82f6" radius={[6, 6, 0, 0]} />
@@ -268,9 +278,21 @@ function Reports() {
                     <div className="chart-card">
                         <h4>Won vs Lost Trend</h4>
                         <ResponsiveContainer width="100%" height={280}>
-                            <LineChart data={wonLostTrend}>
+                            <LineChart
+                                data={wonLostTrend}
+                                margin={{ top: 10, right: 20, left: -20, bottom: 0 }}
+                            >
+
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="month" />
+                                <XAxis
+                                    dataKey="month"
+                                    tick={{ fontSize: 12 }}
+                                    angle={-30}
+                                    interval={0}
+                                    textAnchor="end"
+                                    height={50}
+                                />
+
                                 <YAxis allowDecimals={false} />
                                 <Tooltip />
                                 <Legend />
@@ -283,9 +305,19 @@ function Reports() {
                     <div className="chart-card">
                         <h4>Assignee Performance</h4>
                         <ResponsiveContainer width="100%" height={280}>
-                            <BarChart data={assigneePerformance}>
+                            <BarChart
+                                data={assigneePerformance}
+                                margin={{ top: 10, right: 20, left: -20, bottom: 0 }}
+                            >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="assignee" />
+                                <XAxis
+                                    dataKey="assignee"
+                                    interval={0}
+                                    angle={-30}
+                                    textAnchor="end"
+                                    height={60}
+                                    fontSize={14}
+                                />
                                 <YAxis allowDecimals={false} />
                                 <Tooltip />
                                 <Legend />

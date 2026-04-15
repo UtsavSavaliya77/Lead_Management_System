@@ -7,7 +7,8 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
-  PointerSensor
+  PointerSensor,
+  useDroppable
 } from "@dnd-kit/core";
 import {
   SortableContext,
@@ -21,9 +22,9 @@ import "./Pipline.css";
 
 function Pipeline() {
   const [data, setData] = useState({
-    todo: {
-      id: "todo",
-      title: "To Do",
+    new: {
+      id: "new",
+      title: "New",
       tasks: [
         {
           id: "1",
@@ -43,20 +44,11 @@ function Pipeline() {
           followUp: "2026-04-18",
           source: "LinkedIn",
         },
-        {
-          id: "5",
-          leadName: "Rahul Mehta",
-          company: "TechSoft",
-          priority: "Low",
-          assignee: "Ravi Menon",
-          followUp: "2026-04-21",
-          source: "Referral",
-        },
       ]
     },
-    inprogress: {
-      id: "inprogress",
-      title: "In Progress",
+    contacted: {
+      id: "contacted",
+      title: "Contacted",
       tasks: [
         {
           id: "3",
@@ -78,9 +70,9 @@ function Pipeline() {
         },
       ]
     },
-    inreview: {
-      id: "inreview",
-      title: "In Review",
+    qualified: {
+      id: "qualified",
+      title: "Qualified",
       tasks: [
         {
           id: "7",
@@ -102,9 +94,39 @@ function Pipeline() {
         },
       ],
     },
-    done: {
-      id: "done",
-      title: "Done",
+    proposalSent: {
+      id: "proposalSent",
+      title: "Proposal Sent",
+      tasks: [
+        {
+          id: "5",
+          leadName: "Rahul Mehta",
+          company: "TechSoft",
+          priority: "Low",
+          assignee: "Ravi Menon",
+          followUp: "2026-04-21",
+          source: "Referral",
+        },
+      ],
+    },
+    negotiation: {
+      id: "negotiation",
+      title: "Negotiation",
+      tasks: [
+        {
+          id: "9",
+          leadName: "Karan Malhotra",
+          company: "Zenith Labs",
+          priority: "High",
+          assignee: "Nisha Sharma",
+          followUp: "2026-04-20",
+          source: "Website",
+        },
+      ],
+    },
+    won: {
+      id: "won",
+      title: "Won",
       tasks: [
         {
           id: "4",
@@ -116,7 +138,22 @@ function Pipeline() {
           source: "Web",
         }
       ]
-    }
+    },
+    lost: {
+      id: "lost",
+      title: "Lost",
+      tasks: [
+        {
+          id: "10",
+          leadName: "Isha Roy",
+          company: "PrimeSquare",
+          priority: "Medium",
+          assignee: "Vikram Das",
+          followUp: "2026-04-09",
+          source: "Referral",
+        },
+      ],
+    },
   });
 
   const [activeTask, setActiveTask] = useState(null);
@@ -258,6 +295,26 @@ function Pipeline() {
     );
   };
 
+  // 🧱 Column drop area (supports dropping into empty columns)
+  const ColumnBody = ({ column }) => {
+    const { setNodeRef, isOver } = useDroppable({
+      id: column.id,
+    });
+
+    return (
+      <div
+        ref={setNodeRef}
+        className="pipeline-column-body"
+        id={column.id}
+        style={{ backgroundColor: isOver ? "#e2e8f0" : "transparent" }}
+      >
+        {column.tasks.map((task) => (
+          <Task key={task.id} task={task} />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <Layout>
       <div className="pipeline-page">
@@ -286,11 +343,7 @@ function Pipeline() {
                     <span>{column.tasks.length}</span>
                   </div>
 
-                  <div className="pipeline-column-body" id={column.id}>
-                    {column.tasks.map((task) => (
-                      <Task key={task.id} task={task} />
-                    ))}
-                  </div>
+                  <ColumnBody column={column} />
                 </div>
               </SortableContext>
             ))}

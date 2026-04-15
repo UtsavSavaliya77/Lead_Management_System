@@ -9,6 +9,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 function FollowUp() {
   const [view, setView] = useState("list");
   const [search, setSearch] = useState("");
+  const [activeTab, setActiveTab] = useState("overdue");
   const localizer = momentLocalizer(moment);
   const [calendarView, setCalendarView] = useState("month");
   const [calendarDate, setCalendarDate] = useState(new Date());
@@ -87,8 +88,9 @@ function FollowUp() {
   const overdue = filtered.filter(
     (f) => f.date < today && f.status !== "done"
   );
-  const todayList = filtered.filter((f) => f.date === today);
-  const upcoming = filtered.filter((f) => f.date > today);
+  const todayList = filtered.filter((f) => f.date === today && f.status !== "done");
+  const upcoming = filtered.filter((f) => f.date > today && f.status !== "done");
+  const completed = filtered.filter((f) => f.status === "done");
 
   const markDone = (id) => {
     setFollowUps((prev) =>
@@ -188,13 +190,22 @@ function FollowUp() {
         </span>
 
         <div className="actions">
-          <button onClick={() => markDone(f.id)}>✔</button>
+          {f.status !== "done" && <button onClick={() => markDone(f.id)}>✔</button>}
           <button onClick={() => handleReschedule(f.id, f.date, f.time)}>⏰</button>
           <button onClick={() => handleAddNote(f.id)}>📝</button>
         </div>
       </div>
     </div>
   );
+
+  const tabOptions = [
+    { key: "overdue", label: "Overdue", data: overdue, type: "overdue" },
+    { key: "today", label: "Today", data: todayList, type: "today" },
+    { key: "upcoming", label: "Upcoming", data: upcoming, type: "upcoming" },
+    { key: "completed", label: "Completed", data: completed, type: "completed" },
+  ];
+
+  const selectedTab = tabOptions.find((tab) => tab.key === activeTab) || tabOptions[0];
 
   return (
     <Layout>
@@ -242,33 +253,38 @@ function FollowUp() {
             <h4>{overdue.length}</h4>
             <p>Overdue</p>
           </div>
+          <div className="stat-card completed">
+            <h4>{completed.length}</h4>
+            <p>Completed</p>
+          </div>
         </div>
 
         {/* 🔹 List */}
         {view === "list" ? (
           <div className="list">
-
-            <div className="section">
-              <h3>🔴 Overdue</h3>
-              <div className="grid">
-                {overdue.map((f) => renderCard(f, "overdue"))}
-              </div>
+            <div className="followup-tabs">
+              {tabOptions.map((tab) => (
+                <button
+                  key={tab.key}
+                  className={activeTab === tab.key ? "active" : ""}
+                  onClick={() => setActiveTab(tab.key)}
+                  type="button"
+                >
+                  {tab.label} ({tab.data.length})
+                </button>
+              ))}
             </div>
 
             <div className="section">
-              <h3>🟡 Today</h3>
+              <h3>{selectedTab.label}</h3>
               <div className="grid">
-                {todayList.map((f) => renderCard(f, "today"))}
+                {selectedTab.data.length > 0 ? (
+                  selectedTab.data.map((f) => renderCard(f, selectedTab.type))
+                ) : (
+                  <p className="empty-state">No follow-ups in this tab.</p>
+                )}
               </div>
             </div>
-
-            <div className="section">
-              <h3>🔵 Upcoming</h3>
-              <div className="grid">
-                {upcoming.map((f) => renderCard(f, "upcoming"))}
-              </div>
-            </div>
-
           </div>
         ) : (
           <div className="calendar-wrapper">

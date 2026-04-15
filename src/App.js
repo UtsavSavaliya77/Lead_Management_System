@@ -7,6 +7,7 @@ import Leads from "./Pages/Leads/Leads";
 import FollowUp from "./Pages/FollowUp/FollowUp";
 import Pipeline from "./Pages/Pipline/Pipline";
 import Reports from "./Pages/Reports/Reports";
+import Setting from "./Pages/User/Setting";
 
 // ✅ UPDATED ProtectedRoute (multi-role support)
 function ProtectedRoute({ children, allowedRoles }) {
@@ -101,6 +102,15 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={["admin", "manager"]}>
             <Reports />
+          </ProtectedRoute>
+        }
+      />
+
+<Route
+        path="/setting"
+        element={
+          <ProtectedRoute allowedRoles={["admin", "manager"]}>
+            <Setting/>
           </ProtectedRoute>
         }
       />

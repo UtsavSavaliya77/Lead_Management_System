@@ -166,8 +166,8 @@
     grid-template-columns: 1fr;
   }
 
-  .reports-charts .chart-card:nth-child(3),
+  /* .reports-charts .chart-card:nth-child(3),
   .reports-charts .chart-card:nth-child(4) {
     display: none;
-  }
+  } */
 }

@@ -91,6 +91,11 @@ function Layout({ children }) {
                                 }>
                                     <FaAddressBook /> Reports
                                 </NavLink>
+                                <NavLink to="/setting" className={({ isActive }) =>
+                                    isActive ? "nav-item active" : "nav-item"
+                                }>
+                                    <FaAddressBook /> Setting
+                                </NavLink>
                                 
                             </>
                         )}
