@@ -10,9 +10,12 @@ import {
     FaAddressBook,
     FaTasks,
     FaChartBar,
-    // FaCog,
-    // FaQuestionCircle,
+    FaCalendarCheck,
+    FaUserCog,
+    FaProjectDiagram,
 } from "react-icons/fa";
+import { MdOutlineViewKanban } from "react-icons/md";
+
 
 function Layout({ children }) {
     const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
@@ -79,22 +82,22 @@ function Layout({ children }) {
                                 <NavLink to="/pipline" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaChartBar /> Pipeline
+                                    <MdOutlineViewKanban /> Pipeline
                                 </NavLink>
                                 <NavLink to="/followup" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaAddressBook /> FollowUp
+                                    <FaCalendarCheck /> FollowUp
                                 </NavLink>
                                 <NavLink to="/reports" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaAddressBook /> Reports
+                                    <FaChartBar /> Reports
                                 </NavLink>
                                 <NavLink to="/setting" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaAddressBook /> Setting
+                                    <FaUserCog /> Setting
                                 </NavLink>
                                 
                             </>
