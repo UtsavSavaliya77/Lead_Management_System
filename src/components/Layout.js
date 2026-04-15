@@ -7,12 +7,10 @@ import {
     FaRegCommentDots,
     FaTachometerAlt,
     FaHandshake,
-    FaAddressBook,
     FaTasks,
     FaChartBar,
     FaCalendarCheck,
     FaUserCog,
-    FaProjectDiagram,
 } from "react-icons/fa";
 import { MdOutlineViewKanban } from "react-icons/md";
 
