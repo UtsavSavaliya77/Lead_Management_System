@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Layout.css";
 import {
     FaBars,
@@ -16,14 +16,93 @@ import { MdOutlineViewKanban } from "react-icons/md";
 
 
 function Layout({ children }) {
+    const navigate = useNavigate();
     const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 1024);
     const [showProfileDetails, setShowProfileDetails] = useState(false);
+    const [isEditingProfile, setIsEditingProfile] = useState(false);
+    const [openTopbarPanel, setOpenTopbarPanel] = useState("");
     const role = localStorage.getItem("role");
-    const profileName = localStorage.getItem("name") || "Alex Sterling";
-    const profileEmail = localStorage.getItem("email") || "alex.sterling@digitrend.com";
-    const profilePhone = localStorage.getItem("phone") || "+1 555-010-2000";
-    const profileDepartment = localStorage.getItem("department") || "Sales";
-    const profileLocation = localStorage.getItem("location") || "San Francisco";
+    const notifications = [
+        { id: "n1", title: "New lead assigned", meta: "Priya Sharma - 2m ago" },
+        { id: "n2", title: "Follow-up due today", meta: "Rahul Mehta - 15m ago" },
+        { id: "n3", title: "Pipeline updated", meta: "Qualified to Proposal Sent" },
+    ];
+    const chats = [
+        { id: "c1", name: "Sales Team", message: "Meeting moved to 4:30 PM" },
+        { id: "c2", name: "Anita Nair", message: "Please review the new proposal" },
+        { id: "c3", name: "Support Desk", message: "Client asked for status update" },
+    ];
+    const [profileForm, setProfileForm] = useState({
+        name: localStorage.getItem("name") || "Alex Sterling",
+        email: localStorage.getItem("email") || "alex.sterling@digitrend.com",
+        phone: localStorage.getItem("phone") || "+1 555-010-2000",
+        department: localStorage.getItem("department") || "Sales",
+        location: localStorage.getItem("location") || "San Francisco",
+    });
+    const profileName = profileForm.name;
+    const profileEmail = profileForm.email;
+    const profilePhone = profileForm.phone;
+    const profileDepartment = profileForm.department;
+    const profileLocation = profileForm.location;
+
+    const resetProfileForm = () => {
+        setProfileForm({
+            name: localStorage.getItem("name") || "Alex Sterling",
+            email: localStorage.getItem("email") || "alex.sterling@digitrend.com",
+            phone: localStorage.getItem("phone") || "+1 555-010-2000",
+            department: localStorage.getItem("department") || "Sales",
+            location: localStorage.getItem("location") || "San Francisco",
+        });
+    };
+
+    const handleProfileFieldChange = (event) => {
+        const { name, value } = event.target;
+        setProfileForm((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleOpenProfileDetails = () => {
+        resetProfileForm();
+        setIsEditingProfile(false);
+        setShowProfileDetails(true);
+    };
+
+    const handleCloseProfileDetails = () => {
+        setShowProfileDetails(false);
+        setIsEditingProfile(false);
+    };
+
+    const handleStartEditProfile = () => {
+        resetProfileForm();
+        setIsEditingProfile(true);
+    };
+
+    const handleCancelEditProfile = () => {
+        resetProfileForm();
+        setIsEditingProfile(false);
+    };
+
+    const handleSaveProfile = () => {
+        localStorage.setItem("name", profileForm.name.trim() || "Alex Sterling");
+        localStorage.setItem("email", profileForm.email.trim() || "alex.sterling@digitrend.com");
+        localStorage.setItem("phone", profileForm.phone.trim() || "+1 555-010-2000");
+        localStorage.setItem("department", profileForm.department.trim() || "Sales");
+        localStorage.setItem("location", profileForm.location.trim() || "San Francisco");
+        resetProfileForm();
+        setIsEditingProfile(false);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        setShowProfileDetails(false);
+        setIsEditingProfile(false);
+        setOpenTopbarPanel("");
+        navigate("/", { replace: true });
+    };
+
+    const toggleTopbarPanel = (panelName) => {
+        setOpenTopbarPanel((prev) => (prev === panelName ? "" : panelName));
+    };
 
     useEffect(() => {
         const handleResize = () => {
@@ -39,6 +118,7 @@ function Layout({ children }) {
         const handleEscape = (event) => {
             if (event.key === "Escape") {
                 setShowProfileDetails(false);
+                setOpenTopbarPanel("");
             }
         };
 
@@ -92,11 +172,6 @@ function Layout({ children }) {
                                 }>
                                     <FaChartBar /> Reports
                                 </NavLink>
-                                <NavLink to="/setting" className={({ isActive }) =>
-                                    isActive ? "nav-item active" : "nav-item"
-                                }>
-                                    <FaUserCog /> Setting
-                                </NavLink>
                                 
                             </>
                         )}
@@ -128,17 +203,15 @@ function Layout({ children }) {
                     </div>
                 </div>
 
-                {/* <div className="sidebar-bottom">
-                    <button className="new-deal-btn">New Deal</button>
-
-                    <div className="nav-item bottom-item">
-                        <FaCog /> Settings
+                {role === "admin" && (
+                    <div className="sidebar-bottom">
+                        <NavLink to="/setting" className={({ isActive }) =>
+                            isActive ? "nav-item active bottom-item" : "nav-item bottom-item"
+                        }>
+                            <FaUserCog /> Settings
+                        </NavLink>
                     </div>
-
-                    <div className="nav-item bottom-item">
-                        <FaQuestionCircle /> Support
-                    </div>
-                </div> */}
+                )}
             </aside>
 
             {/* MAIN */}
@@ -159,17 +232,51 @@ function Layout({ children }) {
                     </div>
 
                     <div className="topbar-right">
-                        <span className="topbar-icon">
+                        <button
+                            type="button"
+                            className="topbar-icon topbar-icon-btn"
+                            onClick={() => toggleTopbarPanel("notifications")}
+                            aria-label="Open notifications"
+                        >
                             <FaBell />
-                        </span>
-                        <span className="topbar-icon">
+                            <span className="topbar-icon-badge">{notifications.length}</span>
+                            {openTopbarPanel === "notifications" && (
+                                <div className="topbar-dropdown">
+                                    <h4>Notifications</h4>
+                                    {notifications.map((item) => (
+                                        <div className="topbar-dropdown-item" key={item.id}>
+                                            <p>{item.title}</p>
+                                            <small>{item.meta}</small>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </button>
+                        <button
+                            type="button"
+                            className="topbar-icon topbar-icon-btn"
+                            onClick={() => toggleTopbarPanel("chats")}
+                            aria-label="Open chats"
+                        >
                             <FaRegCommentDots />
-                        </span>
+                            <span className="topbar-icon-badge">{chats.length}</span>
+                            {openTopbarPanel === "chats" && (
+                                <div className="topbar-dropdown">
+                                    <h4>Chats</h4>
+                                    {chats.map((item) => (
+                                        <div className="topbar-dropdown-item" key={item.id}>
+                                            <p>{item.name}</p>
+                                            <small>{item.message}</small>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </button>
 
                         <button
                             type="button"
                             className="profile-box"
-                            onClick={() => setShowProfileDetails(true)}
+                            onClick={handleOpenProfileDetails}
                         >
                             <div className="profile-info">
                                 <h4>{profileName.toUpperCase()}</h4>
@@ -193,14 +300,14 @@ function Layout({ children }) {
                 <>
                     <div
                         className="profile-overlay"
-                        onClick={() => setShowProfileDetails(false)}
+                        onClick={handleCloseProfileDetails}
                     />
                     <div className="profile-details-modal">
                         <div className="profile-details-header">
                             <h3>Profile Details</h3>
                             <button
                                 type="button"
-                                onClick={() => setShowProfileDetails(false)}
+                                onClick={handleCloseProfileDetails}
                                 aria-label="Close profile details"
                             >
                                 x
@@ -216,7 +323,17 @@ function Layout({ children }) {
 
                             <div className="profile-detail-row">
                                 <span>Name</span>
-                                <strong>{profileName}</strong>
+                                {isEditingProfile ? (
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={profileName}
+                                        onChange={handleProfileFieldChange}
+                                        className="profile-detail-input"
+                                    />
+                                ) : (
+                                    <strong>{profileName}</strong>
+                                )}
                             </div>
                             <div className="profile-detail-row">
                                 <span>Role</span>
@@ -224,19 +341,96 @@ function Layout({ children }) {
                             </div>
                             <div className="profile-detail-row">
                                 <span>Email</span>
-                                <strong>{profileEmail}</strong>
+                                {isEditingProfile ? (
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={profileEmail}
+                                        onChange={handleProfileFieldChange}
+                                        className="profile-detail-input"
+                                    />
+                                ) : (
+                                    <strong>{profileEmail}</strong>
+                                )}
                             </div>
                             <div className="profile-detail-row">
                                 <span>Phone</span>
-                                <strong>{profilePhone}</strong>
+                                {isEditingProfile ? (
+                                    <input
+                                        type="text"
+                                        name="phone"
+                                        value={profilePhone}
+                                        onChange={handleProfileFieldChange}
+                                        className="profile-detail-input"
+                                    />
+                                ) : (
+                                    <strong>{profilePhone}</strong>
+                                )}
                             </div>
                             <div className="profile-detail-row">
                                 <span>Department</span>
-                                <strong>{profileDepartment}</strong>
+                                {isEditingProfile ? (
+                                    <input
+                                        type="text"
+                                        name="department"
+                                        value={profileDepartment}
+                                        onChange={handleProfileFieldChange}
+                                        className="profile-detail-input"
+                                    />
+                                ) : (
+                                    <strong>{profileDepartment}</strong>
+                                )}
                             </div>
                             <div className="profile-detail-row">
                                 <span>Location</span>
-                                <strong>{profileLocation}</strong>
+                                {isEditingProfile ? (
+                                    <input
+                                        type="text"
+                                        name="location"
+                                        value={profileLocation}
+                                        onChange={handleProfileFieldChange}
+                                        className="profile-detail-input"
+                                    />
+                                ) : (
+                                    <strong>{profileLocation}</strong>
+                                )}
+                            </div>
+                            <div className="profile-detail-actions">
+                                {isEditingProfile ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="profile-action-btn cancel"
+                                            onClick={handleCancelEditProfile}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="profile-action-btn save"
+                                            onClick={handleSaveProfile}
+                                        >
+                                            Save
+                                        </button>
+                                    </>
+                                ) : (
+                                    <>
+                                        <button
+                                            type="button"
+                                            className="profile-action-btn edit"
+                                            onClick={handleStartEditProfile}
+                                        >
+                                            Edit Profile
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="profile-action-btn logout"
+                                            onClick={handleLogout}
+                                        >
+                                            Logout
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </div>
                     </div>

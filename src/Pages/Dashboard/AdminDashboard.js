@@ -6,6 +6,8 @@ import AddLeadModal from "../../components/AddLeadModal";
 function AdminDashboard() {
   const [showAddLeadModal, setShowAddLeadModal] = useState(false);
   const [dashboardLeads, setDashboardLeads] = useState([]);
+  const [showAllPulseLogs, setShowAllPulseLogs] = useState(false);
+  const [showQuickContactActions, setShowQuickContactActions] = useState(false);
   const baseNewLeads = 38;
 
   const handleSaveDashboardLead = (lead) => {
@@ -96,14 +98,30 @@ function AdminDashboard() {
       text: "Quarterly report generated and mailed",
       time: "5 HOURS AGO • SYSTEM AUTO",
     },
+    {
+      id: 5,
+      dot: "blue-dot",
+      text: 'Proposal sent to "Lumina Systems"',
+      time: "8 HOURS AGO • ALEX JOHNSON",
+    },
+    {
+      id: 6,
+      dot: "yellow-dot",
+      text: 'Reminder set for "Nebula Ventures" follow-up',
+      time: "YESTERDAY • PRIYA IYER",
+    },
   ];
+  const visiblePulseData = showAllPulseLogs ? pulseData : pulseData.slice(0, 3);
 
   return (
     <Layout>
-        <div className="page-content">
-          <div className="page-heading">
+      <div className="page-content">
+        <div className="page-heading">
+          <div>
             <h1>Executive Dashboard</h1>
             <p>System health: Nominal. Regional velocity up by 12.4%.</p>
+          </div>
+          <div>
             <button
               type="button"
               className="dashboard-add-lead-btn"
@@ -112,170 +130,202 @@ function AdminDashboard() {
               + Add Lead
             </button>
           </div>
+        </div>
 
-          <div className="stats-row">
-            <div className="stat-card">
-              <div className="stat-head">
-                <span>TOTAL REVENUE</span>
-                <small className="green-text">+14%</small>
-              </div>
-              <h2>$2,482,900</h2>
-              <div className="mini-line">
-                <div className="mini-line-fill blue-fill"></div>
-              </div>
+        <div className="stats-row">
+          <div className="stat-card">
+            <div className="stat-head">
+              <span>TOTAL REVENUE</span>
+              <small className="green-text">+14%</small>
             </div>
-
-            <div className="stat-card">
-              <div className="stat-head">
-                <span>ACTIVE DEALS</span>
-                <small className="badge">Stable</small>
-              </div>
-              <h2>142</h2>
-              <div className="bars-row">
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span className="big-bar"></span>
-              </div>
+            <h2>$2,482,900</h2>
+            <div className="mini-line">
+              <div className="mini-line-fill blue-fill"></div>
             </div>
+          </div>
 
-            <div className="stat-card">
-              <div className="stat-head">
-                <span>NEW LEADS</span>
-                <small className="red-text">+4%</small>
-              </div>
-              <h2>{baseNewLeads + dashboardLeads.length}</h2>
-              <p className="small-note">Comparison to target: 92%</p>
+          <div className="stat-card">
+            <div className="stat-head">
+              <span>ACTIVE DEALS</span>
+              <small className="badge">Stable</small>
             </div>
+            <h2>142</h2>
+            <div className="bars-row">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span className="big-bar"></span>
+            </div>
+          </div>
 
-            <div className="stat-card">
-              <div className="stat-head">
-                <span>WIN RATE</span>
-                <small className="yellow-text">+2.3%</small>
+          <div className="stat-card">
+            <div className="stat-head">
+              <span>NEW LEADS</span>
+              <small className="red-text">+4%</small>
+            </div>
+            <h2>{baseNewLeads + dashboardLeads.length}</h2>
+            <p className="small-note">Comparison to target: 92%</p>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-head">
+              <span>WIN RATE</span>
+              <small className="yellow-text">+2.3%</small>
+            </div>
+            <h2>64.8%</h2>
+            <div className="mini-line">
+              <div className="mini-line-fill yellow-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="content-row">
+          <div className="left-panel">
+            <div className="pipeline-card">
+              <div className="card-top">
+                <h3>Strategic Pipeline Velocity</h3>
+                <a href="/" onClick={(e) => e.preventDefault()}>
+                  VIEW ALL DEALS
+                </a>
               </div>
-              <h2>64.8%</h2>
-              <div className="mini-line">
-                <div className="mini-line-fill yellow-fill"></div>
+
+              <div className="pipeline-table-wrapper">
+                <div className="pipeline-table">
+                  <div className="table-header">
+                    <div className="col deal-col">DEAL NAME</div>
+                    <div className="col amount-col">AMOUNT</div>
+                    <div className="col stage-col">STAGE</div>
+                    <div className="col prob-col">PROBABILITY</div>
+                  </div>
+
+                  {pipelineData.map((item) => (
+                    <div className="table-row" key={item.id}>
+                      <div className="col deal-col">
+                        <div className="deal-box">
+                          <div className={`deal-avatar ${item.colorClass}`}>
+                            {item.letter}
+                          </div>
+                          <div>
+                            <h4>{item.name}</h4>
+                            <p>{item.sub}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="col amount-col">
+                        <div className="amount-box">
+                          <h4>{item.amount}</h4>
+                          <p>{item.type}</p>
+                        </div>
+                      </div>
+
+                      <div className="col stage-col">
+                        <span className={`stage-badge ${item.stageClass}`}>
+                          {item.stage}
+                        </span>
+                      </div>
+
+                      <div className="col prob-col">
+                        <div className="progress-box">
+                          <div className="progress-track">
+                            <div
+                              className={`progress-fill ${item.progressClass}`}
+                              style={{ width: item.width }}
+                            ></div>
+                          </div>
+                          <span>{item.percent}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="content-row">
-            <div className="left-panel">
-              <div className="pipeline-card">
-                <div className="card-top">
-                  <h3>Strategic Pipeline Velocity</h3>
-                  <a href="/" onClick={(e) => e.preventDefault()}>
-                    VIEW ALL DEALS
+          <div className="right-panel">
+            <div className="pulse-card">
+              <h3>REAL-TIME PULSE</h3>
+
+              {visiblePulseData.map((item) => (
+                <div className="pulse-item" key={item.id}>
+                  <span className={`pulse-dot ${item.dot}`}></span>
+                  <div>
+                    <h4>{item.text}</h4>
+                    <p>{item.time}</p>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                className="expand-btn"
+                onClick={() => setShowAllPulseLogs((prev) => !prev)}
+              >
+                {showAllPulseLogs ? "COLLAPSE EVENT LOGS" : "EXPAND EVENT LOGS"}
+              </button>
+            </div>
+
+            <div className="prospect-card">
+              <div className="prospect-top">
+                <h5>TOP PROSPECT</h5>
+                <span>✦</span>
+              </div>
+
+              <div className="prospect-user">
+                <img
+                  src="https:images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80"
+                  alt="prospect"
+                />
+                <div>
+                  <h4>Elena Rodriguez</h4>
+                  <p>VP, Horizon Media</p>
+                </div>
+              </div>
+
+              <div className="quote-box">
+                "Interested in scaling the enterprise license to 500 seats by
+                Q4. High engagement on technical docs."
+              </div>
+
+              <button
+                type="button"
+                className="contact-btn"
+                onClick={() => setShowQuickContactActions((prev) => !prev)}
+              >
+                {showQuickContactActions ? "HIDE CONTACT OPTIONS" : "QUICK CONTACT"}
+              </button>
+              {showQuickContactActions && (
+                <div className="quick-contact-actions">
+                  <a className="quick-contact-link" href="tel:+919558359356">
+                    Call
+                  </a>
+                  <a
+                    className="quick-contact-link"
+                    href="mailto:elena.rodriguez@horizonmedia.com"
+                  >
+                    Email
+                  </a>
+                  <a
+                    className="quick-contact-link"
+                    href="https://wa.me/919558359356"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    WhatsApp
                   </a>
                 </div>
-
-                <div className="pipeline-table-wrapper">
-                  <div className="pipeline-table">
-                    <div className="table-header">
-                      <div className="col deal-col">DEAL NAME</div>
-                      <div className="col amount-col">AMOUNT</div>
-                      <div className="col stage-col">STAGE</div>
-                      <div className="col prob-col">PROBABILITY</div>
-                    </div>
-
-                    {pipelineData.map((item) => (
-                      <div className="table-row" key={item.id}>
-                        <div className="col deal-col">
-                          <div className="deal-box">
-                            <div className={`deal-avatar ${item.colorClass}`}>
-                              {item.letter}
-                            </div>
-                            <div>
-                              <h4>{item.name}</h4>
-                              <p>{item.sub}</p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col amount-col">
-                          <div className="amount-box">
-                            <h4>{item.amount}</h4>
-                            <p>{item.type}</p>
-                          </div>
-                        </div>
-
-                        <div className="col stage-col">
-                          <span className={`stage-badge ${item.stageClass}`}>
-                            {item.stage}
-                          </span>
-                        </div>
-
-                        <div className="col prob-col">
-                          <div className="progress-box">
-                            <div className="progress-track">
-                              <div
-                                className={`progress-fill ${item.progressClass}`}
-                                style={{ width: item.width }}
-                              ></div>
-                            </div>
-                            <span>{item.percent}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
-
-            <div className="right-panel">
-              <div className="pulse-card">
-                <h3>REAL-TIME PULSE</h3>
-
-                {pulseData.map((item) => (
-                  <div className="pulse-item" key={item.id}>
-                    <span className={`pulse-dot ${item.dot}`}></span>
-                    <div>
-                      <h4>{item.text}</h4>
-                      <p>{item.time}</p>
-                    </div>
-                  </div>
-                ))}
-
-                <button className="expand-btn">EXPAND EVENT LOGS</button>
-              </div>
-
-              <div className="prospect-card">
-                <div className="prospect-top">
-                  <h5>TOP PROSPECT</h5>
-                  <span>✦</span>
-                </div>
-
-                <div className="prospect-user">
-                  <img
-                    src="https:images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80"
-                    alt="prospect"
-                  />
-                  <div>
-                    <h4>Elena Rodriguez</h4>
-                    <p>VP, Horizon Media</p>
-                  </div>
-                </div>
-
-                <div className="quote-box">
-                  "Interested in scaling the enterprise license to 500 seats by
-                  Q4. High engagement on technical docs."
-                </div>
-
-                <button className="contact-btn">QUICK CONTACT</button>
-              </div>
-            </div>
-
-          </div >
-
-        </div>
-        <AddLeadModal
-          isOpen={showAddLeadModal}
-          onClose={() => setShowAddLeadModal(false)}
-          onSave={handleSaveDashboardLead}
-        />
+          </div>
+        </div >
+      </div>
+      <AddLeadModal
+        isOpen={showAddLeadModal}
+        onClose={() => setShowAddLeadModal(false)}
+        onSave={handleSaveDashboardLead}
+      />
     </Layout>
   );
 }

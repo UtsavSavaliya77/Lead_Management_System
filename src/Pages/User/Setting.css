@@ -4,11 +4,21 @@
   border-radius: 8px;
 }
 
-.settings-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 20px;
+.settings-heading {
+  margin-bottom: 14px;
 }
+.settings-heading h1 {
+  margin: 0;
+  font-size: 30px;
+  color: #14345c;
+  }
+
+.settings-heading p {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: #73849b;
+}
+
 
 .settings-tabs {
   display: flex;

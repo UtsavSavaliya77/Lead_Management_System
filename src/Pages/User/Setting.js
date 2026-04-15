@@ -96,7 +96,10 @@ const Setting = () => {
     return (
         <Layout>
             <div className="settings-container">
-                <h2 className="settings-title">Settings</h2>
+                <div className="settings-heading">
+                    <h1>Settings</h1>
+                    <p>Manage your settings and preferences.</p>
+                </div>
                 <div className="settings-tabs">
                     {TAB_CONFIG.map((tab) => (
                         <button

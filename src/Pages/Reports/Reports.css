@@ -4,13 +4,14 @@
 
 .reports-heading h1 {
   margin: 0;
-  font-size: 28px;
-  color: #0f172a;
+  font-size: 30px;
+  color: #14345c;
 }
 
 .reports-heading p {
   margin: 6px 0 0;
-  color: #64748b;
+  font-size: 14px;
+  color: #73849b;
 }
 
 .reports-filters {
@@ -90,8 +91,8 @@
 .report-table-card {
   margin-top: 14px;
   background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  /* border: 1px solid #e2e8f0; */
+  /* border-radius: 10px; */
   overflow: hidden;
 }
 
@@ -100,7 +101,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  border-bottom: 1px solid #e2e8f0;
+  /* border-bottom: 1px solid #e2e8f0; */
 }
 
 .report-table-head h4 {
@@ -129,7 +130,7 @@
 
 .report-table-wrap th,
 .report-table-wrap td {
-  border-bottom: 1px solid #eef2f7;
+  border: 1px solid #000000;
   text-align: left;
   padding: 10px 12px;
   font-size: 13px;
@@ -138,7 +139,7 @@
 
 .report-table-wrap th {
   background: #f8fafc;
-  color: #64748b;
+  color: #000000;
   font-size: 12px;
 }
 

@@ -244,6 +244,11 @@ function Leads() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedLeadId, setSelectedLeadId] = useState(null);
   const [noteDraft, setNoteDraft] = useState("");
+  const [scheduleState, setScheduleState] = useState({
+    isOpen: false,
+    date: "",
+    time: "10:00",
+  });
   
 
   const filteredLeads = useMemo(() => {
@@ -281,6 +286,13 @@ function Leads() {
       day: "2-digit",   // 24
       year: "numeric"   // 2023
     });
+  };
+
+  const formatFollowUp = (dateValue, timeValue) => {
+    if (!dateValue || dateValue === "--") return "--";
+    const formattedDate = formatDate(dateValue);
+    if (!timeValue) return formattedDate;
+    return `${formattedDate}, ${timeValue}`;
   };
 
   // const handleRowsPerPageChange = (event) => {
@@ -379,48 +391,53 @@ function Leads() {
 
   const handleAddNote = () => {
     const cleanNote = noteDraft.trim();
-    if (!cleanNote) return;
+    if (!cleanNote) {
+      toast.error("Please enter a note.");
+      return;
+    }
 
     updateSelectedLead((lead) => ({
       ...lead,
       notes: [...lead.notes, cleanNote],
     }));
     setNoteDraft("");
+    toast.success("Note added successfully.");
   };
 
   const handleSchedule = () => {
     if (!selectedLead) return;
-    const currentValue =
-      selectedLead.followUp && selectedLead.followUp !== "--"
-        ? selectedLead.followUp
-        : "";
-    const newDate = window.prompt(
-      "Enter follow-up date (YYYY-MM-DD):",
-      currentValue
-    );
+    setScheduleState({
+      isOpen: true,
+      date:
+        selectedLead.followUp && selectedLead.followUp !== "--"
+          ? selectedLead.followUp
+          : "",
+      time: selectedLead.followUpTime || "10:00",
+    });
+  };
 
-    if (newDate === null) return;
-    const cleanDate = newDate.trim();
-    if (!cleanDate) return;
+  const closeScheduleModal = () => {
+    setScheduleState({
+      isOpen: false,
+      date: "",
+      time: "10:00",
+    });
+  };
 
-    const isValidDateFormat = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate);
-    const [year, month, day] = cleanDate.split("-").map(Number);
-    const parsedDate = new Date(Date.UTC(year, month - 1, day));
-    const isRealDate =
-      parsedDate.getUTCFullYear() === year &&
-      parsedDate.getUTCMonth() === month - 1 &&
-      parsedDate.getUTCDate() === day;
-
-    if (!isValidDateFormat || !isRealDate) {
-      toast.error("Please enter a valid date in YYYY-MM-DD format.");
+  const submitSchedule = () => {
+    if (!selectedLead) return;
+    if (!scheduleState.date || !scheduleState.time) {
+      toast.error("Please select both date and time.");
       return;
     }
 
     updateSelectedLead((lead) => ({
       ...lead,
-      followUp: cleanDate,
+      followUp: scheduleState.date,
+      followUpTime: scheduleState.time,
     }));
-    toast.success("Follow-up date updated successfully.");
+    closeScheduleModal();
+    toast.success("Follow-up date and time updated successfully.");
   };
 
   const handleStatusChange = () => {
@@ -518,7 +535,7 @@ function Leads() {
                     <td>{lead.status}</td>
                     <td className={`priority-${lead.priority.toLowerCase()}`}>{lead.priority}</td>
                     <td>{lead.assignedTo}</td>
-                    <td>{formatDate(lead.followUp)}</td>
+                    <td>{formatFollowUp(lead.followUp, lead.followUpTime)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -617,7 +634,7 @@ function Leads() {
                 <div className="follow-up-card">
                   <div>
                     <p className="follow-up-label">Next Follow-up Overdue</p>
-                    <h4>{formatDate(selectedLead.followUp)}</h4>
+                    <h4>{formatFollowUp(selectedLead.followUp, selectedLead.followUpTime)}</h4>
                   </div>
                   <button onClick={handleSchedule}>Reschedule</button>
                 </div>
@@ -669,6 +686,44 @@ function Leads() {
           </>
         )}
       </div>
+
+      {selectedLead && scheduleState.isOpen && (
+        <div className="reschedule-modal-overlay" onClick={closeScheduleModal}>
+          <div className="reschedule-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Reschedule Follow-up</h3>
+            <div className="reschedule-form-row">
+              <label htmlFor="lead-followup-date">Date</label>
+              <input
+                id="lead-followup-date"
+                type="date"
+                value={scheduleState.date}
+                onChange={(e) =>
+                  setScheduleState((prev) => ({ ...prev, date: e.target.value }))
+                }
+              />
+            </div>
+            <div className="reschedule-form-row">
+              <label htmlFor="lead-followup-time">Time</label>
+              <input
+                id="lead-followup-time"
+                type="time"
+                value={scheduleState.time}
+                onChange={(e) =>
+                  setScheduleState((prev) => ({ ...prev, time: e.target.value }))
+                }
+              />
+            </div>
+            <div className="reschedule-modal-actions">
+              <button type="button" onClick={closeScheduleModal}>
+                Cancel
+              </button>
+              <button type="button" className="save-btn" onClick={submitSchedule}>
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <AddLeadModal
         isOpen={showAddModal}

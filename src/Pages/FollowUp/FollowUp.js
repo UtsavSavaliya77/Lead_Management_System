@@ -14,6 +14,12 @@ function FollowUp() {
   const localizer = momentLocalizer(moment);
   const [calendarView, setCalendarView] = useState("month");
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [rescheduleState, setRescheduleState] = useState({
+    isOpen: false,
+    followUpId: null,
+    date: "",
+    time: "",
+  });
 
 
 
@@ -102,40 +108,38 @@ function FollowUp() {
   };
 
   const handleReschedule = (id, currentDate, currentTime) => {
-    const nextDate = window.prompt("Enter new date (YYYY-MM-DD):", currentDate);
-    if (nextDate === null) return;
+    setRescheduleState({
+      isOpen: true,
+      followUpId: id,
+      date: currentDate,
+      time: currentTime,
+    });
+  };
 
-    const cleanDate = nextDate.trim();
-    if (!cleanDate) return;
+  const closeRescheduleModal = () => {
+    setRescheduleState({
+      isOpen: false,
+      followUpId: null,
+      date: "",
+      time: "",
+    });
+  };
 
-    const isValidDateFormat = /^\d{4}-\d{2}-\d{2}$/.test(cleanDate);
-    const [year, month, day] = cleanDate.split("-").map(Number);
-    const parsedDate = new Date(Date.UTC(year, month - 1, day));
-    const isRealDate =
-      parsedDate.getUTCFullYear() === year &&
-      parsedDate.getUTCMonth() === month - 1 &&
-      parsedDate.getUTCDate() === day;
+  const submitReschedule = () => {
+    const { followUpId, date, time } = rescheduleState;
+    if (!followUpId) return;
 
-    if (!isValidDateFormat || !isRealDate) {
-      toast.error("Please enter a valid date in YYYY-MM-DD format.");
-      return;
-    }
-
-    const nextTime = window.prompt("Enter new time (HH:mm):", currentTime);
-    if (nextTime === null) return;
-
-    const cleanTime = nextTime.trim();
-    const isValidTime = /^([01]\d|2[0-3]):([0-5]\d)$/.test(cleanTime);
-    if (!isValidTime) {
-      toast.error("Please enter a valid time in 24-hour format (HH:mm).");
+    if (!date || !time) {
+      toast.error("Please select both date and time.");
       return;
     }
 
     setFollowUps((prev) =>
       prev.map((f) =>
-        f.id === id ? { ...f, date: cleanDate, time: cleanTime } : f
+        f.id === followUpId ? { ...f, date, time } : f
       )
     );
+    closeRescheduleModal();
     toast.success("Follow-up rescheduled successfully.");
   };
 
@@ -223,8 +227,8 @@ function FollowUp() {
         {/* 🔹 Header */}
         <div className="header">
           <div>
-            <h2>Follow-up</h2>
-            <p className="subtitle">Manage your daily tasks</p>
+            <h1>Follow-Up</h1>
+            <p>Manage your daily tasks</p>
           </div>
 
           <div className="header-right">
@@ -322,6 +326,43 @@ function FollowUp() {
           </div>
         )}
       </div>
+      {rescheduleState.isOpen && (
+        <div className="reschedule-modal-overlay" onClick={closeRescheduleModal}>
+          <div className="reschedule-modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Reschedule Follow-up</h3>
+            <div className="reschedule-form-row">
+              <label htmlFor="followup-date">Date</label>
+              <input
+                id="followup-date"
+                type="date"
+                value={rescheduleState.date}
+                onChange={(e) =>
+                  setRescheduleState((prev) => ({ ...prev, date: e.target.value }))
+                }
+              />
+            </div>
+            <div className="reschedule-form-row">
+              <label htmlFor="followup-time">Time</label>
+              <input
+                id="followup-time"
+                type="time"
+                value={rescheduleState.time}
+                onChange={(e) =>
+                  setRescheduleState((prev) => ({ ...prev, time: e.target.value }))
+                }
+              />
+            </div>
+            <div className="reschedule-modal-actions">
+              <button type="button" onClick={closeRescheduleModal}>
+                Cancel
+              </button>
+              <button type="button" className="save-btn" onClick={submitReschedule}>
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

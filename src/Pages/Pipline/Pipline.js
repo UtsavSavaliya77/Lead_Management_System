@@ -44,7 +44,8 @@ function Pipeline() {
           followUp: "2026-04-18",
           source: "LinkedIn",
         },
-      ]
+      ],
+      color: "#3B82F6",
     },
     contacted: {
       id: "contacted",
@@ -68,7 +69,8 @@ function Pipeline() {
           followUp: "2026-04-17",
           source: "Website",
         },
-      ]
+      ],
+      color: "#06B6D4",
     },
     qualified: {
       id: "qualified",
@@ -93,6 +95,7 @@ function Pipeline() {
           source: "Referral",
         },
       ],
+      color: "#8B5CF6",
     },
     proposalSent: {
       id: "proposalSent",
@@ -108,6 +111,7 @@ function Pipeline() {
           source: "Referral",
         },
       ],
+      color: "#F59E0B",
     },
     negotiation: {
       id: "negotiation",
@@ -123,6 +127,7 @@ function Pipeline() {
           source: "Website",
         },
       ],
+      color: "#F97316",
     },
     won: {
       id: "won",
@@ -137,7 +142,8 @@ function Pipeline() {
           followUp: "2026-04-14",
           source: "Web",
         }
-      ]
+      ],
+      color: "#10B981",
     },
     lost: {
       id: "lost",
@@ -153,10 +159,19 @@ function Pipeline() {
           source: "Referral",
         },
       ],
+      color: "#EF4444",
     },
   });
 
   const [activeTask, setActiveTask] = useState(null);
+
+  const getPriorityClass = (priority = "") => {
+    const value = priority.toLowerCase();
+    if (value === "high") return "priority-high";
+    if (value === "medium") return "priority-medium";
+    if (value === "low") return "priority-low1";
+    return "priority-default";
+  };
 
   // 🔥 Sensors (smooth drag control)
   const sensors = useSensors(
@@ -284,9 +299,14 @@ function Pipeline() {
         {...listeners}
       >
         <p className="pipeline-card-title">{task.leadName}</p>
-        <p className="pipeline-card-company">{task.company}</p>
+        <p className="pipeline-card-company" style={{ color: task.companyColor }}>{task.company}</p>
         <div className="pipeline-card-grid">
-          <p><strong>Priority:</strong> {task.priority}</p>
+          <p className="pipeline-priority-row">
+            <strong>Priority:</strong>
+            <span className={`pipeline-priority-badge ${getPriorityClass(task.priority)}`}>
+              {task.priority}
+            </span>
+          </p>
           <p><strong>Assignee:</strong> {task.assignee}</p>
           <p><strong>Next Follow-up:</strong> {task.followUp}</p>
           <p><strong>Source:</strong> {task.source}</p>
@@ -319,8 +339,8 @@ function Pipeline() {
     <Layout>
       <div className="pipeline-page">
         <div className="pipeline-topbar">
-          <div className="pipeline-breadcrumb">Projects / Leads</div>
-          <h2>Pipeline</h2>
+          <h1>Pipeline</h1>
+          <p>Manage your leads through the pipeline</p>
         </div>
 
         <DndContext
@@ -336,10 +356,11 @@ function Pipeline() {
                 key={column.id}
                 items={column.tasks.map((task) => task.id)}
                 strategy={verticalListSortingStrategy}
+                
               >
-                <div className="pipeline-column">
-                  <div className="pipeline-column-header">
-                    <h3>{column.title}</h3>
+                <div className="pipeline-column" >
+                  <div className="pipeline-column-header" style={{ backgroundColor: column.color }}>
+                    <h3 >{column.title}</h3>
                     <span>{column.tasks.length}</span>
                   </div>
 
@@ -356,7 +377,12 @@ function Pipeline() {
                 <p className="pipeline-card-title">{activeTask.leadName}</p>
                 <p className="pipeline-card-company">{activeTask.company}</p>
                 <div className="pipeline-card-grid">
-                  <p><strong>Priority:</strong> {activeTask.priority}</p>
+                  <p className="pipeline-priority-row">
+                    <strong>Priority:</strong>
+                    <span className={`pipeline-priority-badge ${getPriorityClass(activeTask.priority)}`}>
+                      {activeTask.priority}
+                    </span>
+                  </p>
                   <p><strong>Assignee:</strong> {activeTask.assignee}</p>
                   <p><strong>Next Follow-up:</strong> {activeTask.followUp}</p>
                   <p><strong>Source:</strong> {activeTask.source}</p>

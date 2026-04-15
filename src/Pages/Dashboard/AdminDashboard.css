@@ -13,19 +13,20 @@ body {
 
 .page-heading h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 30px;
   color: #14345c;
 }
 
 .page-heading p {
   margin: 6px 0 0;
-  font-size: 12px;
+  font-size: 14px;
   color: #73849b;
 }
 
 .page-heading {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 14px;
@@ -569,6 +570,31 @@ body {
   cursor: pointer;
 }
 
+.quick-contact-actions {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.quick-contact-link {
+  height: 34px;
+  border: 1px solid #dbe5f3;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: #f8fbff;
+}
+
+.quick-contact-link:hover {
+  background: #eaf2ff;
+}
+
 /* 1024 AND BELOW: ONLY TABLE SCROLLS */
 @media (max-width: 1024px) {
   .pipeline-table-wrapper {
@@ -619,5 +645,9 @@ body {
   .table-header,
   .table-row {
     padding: 14px;
+  }
+
+  .quick-contact-actions {
+    grid-template-columns: 1fr;
   }
 }

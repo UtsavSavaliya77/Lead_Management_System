@@ -31,12 +31,13 @@
 .leads-header h1 {
   margin: 0;
   font-size: 30px;
-  color: #0f172a;
+  color: #14345c;
 }
 
 .leads-header p {
   margin: 6px 0 0;
-  color: #475569;
+  font-size: 14px;
+  color: #73849b;
 }
 
 .header-actions {
@@ -701,6 +702,71 @@
 .modal-actions .save-btn {
   background: #ef4444;
   border-color: #ef4444;
+  color: #fff;
+}
+
+.reschedule-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 1100;
+  padding: 16px;
+}
+
+.reschedule-modal {
+  width: min(420px, 100%);
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #dbe4ee;
+  padding: 18px;
+  box-shadow: 0 20px 30px rgba(15, 23, 42, 0.18);
+}
+
+.reschedule-modal h3 {
+  margin: 0 0 14px;
+  color: #0f172a;
+}
+
+.reschedule-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.reschedule-form-row label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.reschedule-form-row input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.reschedule-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.reschedule-modal-actions button {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.reschedule-modal-actions .save-btn {
+  background: #2563eb;
+  border-color: #2563eb;
   color: #fff;
 }
 
