@@ -130,7 +130,7 @@
 
 .report-table-wrap th,
 .report-table-wrap td {
-  border: 1px solid #000000;
+  border: 0.1px solid #b9b8b8;
   text-align: left;
   padding: 10px 12px;
   font-size: 13px;

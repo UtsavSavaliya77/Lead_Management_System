@@ -63,6 +63,12 @@
   font-weight: 700;
 }
 
+.alm-error {
+  color: #dc2626;
+  font-size: 11px;
+  margin-top: -2px;
+}
+
 .alm-field input,
 .alm-field select,
 .alm-field textarea {

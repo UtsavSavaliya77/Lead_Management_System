@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "./LoginPage.css";
 import Logo from "../../assets/Logo/Logo.png";
+import SelectField from "../../components/Select2";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -11,6 +12,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("");
+
 
   const users = [
     {
@@ -68,7 +70,7 @@ function LoginPage() {
 
       <div className="login-card">
         <div className="logo-wrap">
-            <img src={Logo} alt="Company Logo" className="logo" />
+          <img src={Logo} alt="Company Logo" className="logo" />
         </div>
 
         <h1 className="title">Welcome back</h1>
@@ -105,13 +107,17 @@ function LoginPage() {
           </div>
 
           <div className="form-group">
-            <label>ROLE</label>
-            <select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="">Select Role</option>
-              <option value="admin">Admin</option>
-              <option value="manager">Manager</option>
-              <option value="user">User</option>
-            </select>
+
+            <SelectField
+              label="ROLE"
+              options={[
+                { value: "admin", label: "Admin" },
+                { value: "manager", label: "Manager" },
+                { value: "user", label: "User" },
+              ]}
+              value={role}
+              onChange={setRole}
+            />
           </div>
 
           <div className="options-row">

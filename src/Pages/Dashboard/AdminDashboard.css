@@ -229,8 +229,9 @@ body {
 .pipeline-table-wrapper {
   width: 100%;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: auto;
   position: relative;
+  max-height: 400px;
 }
 
 .pipeline-table {
@@ -599,7 +600,7 @@ body {
 @media (max-width: 1024px) {
   .pipeline-table-wrapper {
     overflow-x: auto;
-    overflow-y: hidden;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x;
   }

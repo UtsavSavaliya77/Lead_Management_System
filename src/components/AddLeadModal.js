@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./AddLeadModal.css";
+import Select2 from "./Select2";
 
 const INITIAL_FORM = {
   leadName: "",
@@ -18,19 +19,83 @@ const INITIAL_FORM = {
   city: "",
 };
 
+const ASSIGNEE_OPTIONS = [
+  { value: "Alex Rivera", label: "Alex Rivera" },
+  { value: "Sarah Khan", label: "Sarah Khan" },
+  { value: "David Thomas", label: "David Thomas" },
+  { value: "Anita Nair", label: "Anita Nair" },
+  { value: "Piyush Jain", label: "Piyush Jain" },
+];
+
 function AddLeadModal({ isOpen, onClose, onSave }) {
   const [formData, setFormData] = useState(INITIAL_FORM);
+  const [errors, setErrors] = useState({});
 
   if (!isOpen) return null;
 
+  const validateField = (name, value) => {
+    const trimmedValue = value.trim();
+    const emailRegex =  /^[A-Za-z0-9_]+@[A-Za-z]+\.[A-Za-z]{2,}$/;
+
+    if (name === "phone") {
+      if (!trimmedValue) return "Phone number is required.";
+      if (!/^\d+$/.test(trimmedValue)) return "Phone must contain digits only.";
+      if (trimmedValue.length !== 10) return "Phone must be exactly 10 digits.";
+    }
+
+    if (name === "alternatePhone" && trimmedValue) {
+      if (!/^\d+$/.test(trimmedValue)) return "Alternate phone must contain digits only.";
+      if (trimmedValue.length !== 10) return "Alternate phone must be exactly 10 digits.";
+    }
+
+    if (name === "email" && trimmedValue && !emailRegex.test(trimmedValue)) {
+      return "Enter a valid email address (example@domain.com).";
+    }
+
+    return "";
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const nextValue =
+      name === "phone" || name === "alternatePhone" ? value.slice(0, 10) : value;
+    const fieldError = validateField(name, nextValue);
+
+    setFormData((prev) => ({ ...prev, [name]: nextValue }));
+    setErrors((prev) => ({ ...prev, [name]: fieldError }));
+  };
+
+  const validateForm = () => {
+    const nextErrors = {};
+
+    if (!formData.leadName.trim()) {
+      nextErrors.leadName = "Lead name is required.";
+    }
+
+    if (!formData.companyName.trim()) {
+      nextErrors.companyName = "Company name is required.";
+    }
+
+    const phoneError = validateField("phone", formData.phone);
+    if (phoneError) nextErrors.phone = phoneError;
+
+    const alternatePhoneError = validateField("alternatePhone", formData.alternatePhone);
+    if (alternatePhoneError) nextErrors.alternatePhone = alternatePhoneError;
+
+    const emailError = validateField("email", formData.email);
+    if (emailError) nextErrors.email = emailError;
+
+    if (!formData.assignedTo.trim()) {
+      nextErrors.assignedTo = "Please select assignee.";
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
   };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!formData.leadName.trim() || !formData.companyName.trim()) return;
+    if (!validateForm()) return;
 
     onSave({
       id: Date.now(),
@@ -58,6 +123,7 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
     });
 
     setFormData(INITIAL_FORM);
+    setErrors({});
     onClose();
   };
 
@@ -82,6 +148,7 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
                 placeholder="e.g. Jonathan Ive"
                 required
               />
+              {errors.leadName && <small className="alm-error">{errors.leadName}</small>}
             </label>
 
             <label className="alm-field">
@@ -93,6 +160,7 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
                 placeholder="e.g. Cupertino Design Co."
                 required
               />
+              {errors.companyName && <small className="alm-error">{errors.companyName}</small>}
             </label>
 
             <label className="alm-field">
@@ -101,8 +169,12 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="+1 (555) 000-0000"
+                placeholder="Enter 10-digit phone"
+                inputMode="numeric"
+                maxLength={10}
+                required
               />
+              {errors.phone && <small className="alm-error">{errors.phone}</small>}
             </label>
 
             <label className="alm-field">
@@ -111,18 +183,23 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
                 name="alternatePhone"
                 value={formData.alternatePhone}
                 onChange={handleChange}
-                placeholder="Mobile or Home"
+                placeholder="Optional 10-digit number"
+                inputMode="numeric"
+                maxLength={10}
               />
+              {errors.alternatePhone && <small className="alm-error">{errors.alternatePhone}</small>}
             </label>
 
             <label className="alm-field">
               <span>EMAIL</span>
               <input
                 name="email"
+                type="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="contact@company.com"
               />
+              {errors.email && <small className="alm-error">{errors.email}</small>}
             </label>
 
             <label className="alm-field">
@@ -187,12 +264,17 @@ function AddLeadModal({ isOpen, onClose, onSave }) {
 
             <label className="alm-field">
               <span>ASSIGNED TO</span>
-              <input
-                name="assignedTo"
+              <Select2
+                options={ASSIGNEE_OPTIONS}
                 value={formData.assignedTo}
-                onChange={handleChange}
-                placeholder="Alex Rivera"
+                onChange={(value) => {
+                  setFormData((prev) => ({ ...prev, assignedTo: value }));
+                  setErrors((prev) => ({ ...prev, assignedTo: "" }));
+                }}
+                placeholder="Select assignee"
+                isClearable={false}
               />
+              {errors.assignedTo && <small className="alm-error">{errors.assignedTo}</small>}
             </label>
 
             <label className="alm-field">

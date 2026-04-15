@@ -129,7 +129,7 @@ function Layout({ children }) {
     return (
         <div className="dashboard-wrapper">
             {/* SIDEBAR */}
-            <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
+            <aside className={`sidebar ${sidebarOpen ? "open" : "desktop-collapsed"}`}>
                 {/* {sidebarOpen && window.innerWidth <= 1024 && (
                     <div className="overlay" onClick={() => setSidebarOpen(false)}></div>
                 )} */}
@@ -146,7 +146,8 @@ function Layout({ children }) {
                         <NavLink to={`/${role}-dashboard`} className={({ isActive }) =>
                             isActive ? "nav-item active" : "nav-item"
                         }>
-                            <FaTachometerAlt /> Dashboard
+                            <span className="nav-icon"><FaTachometerAlt /></span>
+                            <span className="nav-label">Dashboard</span>
                         </NavLink>
 
                         {/* ADMIN */}
@@ -155,22 +156,26 @@ function Layout({ children }) {
                                 <NavLink to="/leads" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaHandshake /> Leads
+                                    <span className="nav-icon"><FaHandshake /></span>
+                                    <span className="nav-label">Leads</span>
                                 </NavLink>
                                 <NavLink to="/pipline" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <MdOutlineViewKanban /> Pipeline
+                                    <span className="nav-icon"><MdOutlineViewKanban /></span>
+                                    <span className="nav-label">Pipeline</span>
                                 </NavLink>
                                 <NavLink to="/followup" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaCalendarCheck /> FollowUp
+                                    <span className="nav-icon"><FaCalendarCheck /></span>
+                                    <span className="nav-label">FollowUp</span>
                                 </NavLink>
                                 <NavLink to="/reports" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaChartBar /> Reports
+                                    <span className="nav-icon"><FaChartBar /></span>
+                                    <span className="nav-label">Reports</span>
                                 </NavLink>
                                 
                             </>
@@ -182,12 +187,14 @@ function Layout({ children }) {
                                 <NavLink to="/leads" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaHandshake /> Leads
+                                    <span className="nav-icon"><FaHandshake /></span>
+                                    <span className="nav-label">Leads</span>
                                 </NavLink>
                                 <NavLink to="/tasks" className={({ isActive }) =>
                                     isActive ? "nav-item active" : "nav-item"
                                 }>
-                                    <FaTasks /> Tasks
+                                    <span className="nav-icon"><FaTasks /></span>
+                                    <span className="nav-label">Tasks</span>
                                 </NavLink>
                             </>
                         )}
@@ -197,7 +204,8 @@ function Layout({ children }) {
                             <NavLink to="/tasks" className={({ isActive }) =>
                                 isActive ? "nav-item active" : "nav-item"
                             }>
-                                <FaTasks /> Tasks
+                                <span className="nav-icon"><FaTasks /></span>
+                                <span className="nav-label">Tasks</span>
                             </NavLink>
                         )}
                     </div>
@@ -208,7 +216,8 @@ function Layout({ children }) {
                         <NavLink to="/setting" className={({ isActive }) =>
                             isActive ? "nav-item active bottom-item" : "nav-item bottom-item"
                         }>
-                            <FaUserCog /> Settings
+                            <span className="nav-icon"><FaUserCog /></span>
+                            <span className="nav-label">Settings</span>
                         </NavLink>
                     </div>
                 )}
